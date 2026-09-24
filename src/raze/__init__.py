@@ -15,14 +15,24 @@ from raze.calibrator import CalibratedBackend, TemperatureScaler, fit_temperatur
 from raze.decide import Decision, build_decision
 from raze.engagement import AttackChain, EngagementReport, run_engagement
 from raze.judgments import (
+    AssetPriority,
     CombinedJudgment,
     Exploitability,
+    GoNoGo,
     Impact,
+    InScope,
     Judgment,
     JudgmentContext,
     NextAction,
     Novelty,
     Reachability,
+    TechniqueSelection,
+)
+from raze.killchain import (
+    DECISION_REGISTRY,
+    DecisionKind,
+    Phase,
+    human_gated_kinds,
 )
 from raze.model import Backend, EchoBackend, Raze
 from raze.topics import ALL_TOPICS, Signal, Topic, analyze
@@ -30,29 +40,36 @@ from raze.validators import ValidationResult, validate_finding
 
 __all__ = [
     "ALL_TOPICS",
+    "DECISION_REGISTRY",
     "Assessment",
+    "AssetPriority",
     "AttackChain",
     "Backend",
     "CalibratedBackend",
     "CalibrationReport",
     "CombinedJudgment",
     "Decision",
+    "DecisionKind",
     "EchoBackend",
     "EngagementReport",
     "Exploitability",
     "Finding",
+    "GoNoGo",
     "Impact",
+    "InScope",
     "Judgment",
     "JudgmentContext",
     "LLMBackend",
     "NextAction",
     "Novelty",
+    "Phase",
     "Raze",
     "RazeAgent",
     "Reachability",
     "Scope",
     "ScopeError",
     "Signal",
+    "TechniqueSelection",
     "TemperatureScaler",
     "Topic",
     "ValidationResult",
@@ -60,6 +77,7 @@ __all__ = [
     "build_decision",
     "expected_calibration_error",
     "fit_temperature",
+    "human_gated_kinds",
     "run_engagement",
     "validate_finding",
 ]

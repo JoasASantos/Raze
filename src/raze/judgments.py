@@ -94,6 +94,34 @@ class NextAction(Judgment):
         return max(self.candidates, key=lambda c: c.score, default=None)
 
 
+class AssetPriority(Judgment):
+    """How much attention an asset/target deserves (recon/enumeration)."""
+
+    score: float = Field(0.0, ge=0.0, le=1.0)
+    reason: str = ""
+
+
+class InScope(Judgment):
+    """Whether a target is worth engaging (advisory; the hard gate is authz)."""
+
+    in_scope: bool = False
+
+
+class TechniqueSelection(Judgment):
+    """Ranked techniques to attempt for a confirmed weakness (exploitation)."""
+
+    candidates: list[ActionCandidate] = Field(default_factory=list)
+
+
+class GoNoGo(Judgment):
+    """Go/no-go gate for a state-changing action. Offensive actions default to
+    requiring explicit human approval."""
+
+    proceed: bool = False
+    requires_human: bool = True
+    blast_radius: str = "unknown"  # none | low | medium | high | unknown
+
+
 class CombinedJudgment(Judgment):
     """All judgments in ONE model call — the fast path.
 
