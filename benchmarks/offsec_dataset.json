@@ -1,25 +1,939 @@
 [
-  {"finding": {"target": "app.example.com", "topic": "web", "title": "Unescaped reflection (XSS)", "has_reproduction": true, "state": {"param_value": "<svg onload=1>", "response_body": "<html>q=<svg onload=1></html>", "response_headers": {"Server": "nginx"}}}, "exploitable_truth": true},
-  {"finding": {"target": "app.example.com", "topic": "web", "title": "Reflection properly encoded", "has_reproduction": false, "state": {"param_value": "<b>", "response_body": "<html>q=&lt;b&gt;</html>", "response_headers": {"Content-Security-Policy": "default-src 'self'"}}}, "exploitable_truth": false},
-  {"finding": {"target": "app.example.com", "topic": "web", "title": "Error-based SQLi", "has_reproduction": true, "state": {"response_body": "You have an error in your SQL syntax near '1'"}}, "exploitable_truth": true},
-  {"finding": {"target": "app.example.com", "topic": "web", "title": "Open redirect", "has_reproduction": true, "state": {"location_header": "https://evil.example/", "param_value": "https://evil.example/"}}, "exploitable_truth": true},
-  {"finding": {"target": "app.example.com", "topic": "web", "title": "Only missing security headers", "has_reproduction": false, "state": {"response_headers": {"Server": "nginx"}}}, "exploitable_truth": false},
-  {"finding": {"target": "db.example.com", "topic": "network", "title": "Exposed Redis", "has_reproduction": true, "state": {"open_ports": [6379]}}, "exploitable_truth": true},
-  {"finding": {"target": "db.example.com", "topic": "network", "title": "Exposed MongoDB", "has_reproduction": true, "state": {"open_ports": [27017]}}, "exploitable_truth": true},
-  {"finding": {"target": "web.example.com", "topic": "network", "title": "Only SSH + HTTP open", "has_reproduction": false, "state": {"open_ports": [22, 80]}}, "exploitable_truth": false},
-  {"finding": {"target": "corp.example.com", "topic": "crypto", "title": "JWT accepts alg=none", "has_reproduction": true, "state": {"jwt_alg": "none"}}, "exploitable_truth": true},
-  {"finding": {"target": "corp.example.com", "topic": "crypto", "title": "MD5 for content hashing", "has_reproduction": false, "state": {"algorithms": ["md5"]}}, "exploitable_truth": false},
-  {"finding": {"target": "corp.example.com", "topic": "crypto", "title": "Low-entropy signing secret", "has_reproduction": true, "state": {"secret": "aaaaaaaa"}}, "exploitable_truth": true},
-  {"finding": {"target": "dc.example.com", "topic": "ad", "title": "Unconstrained delegation", "has_reproduction": true, "state": {"accounts": [{"name": "SRV01$", "unconstrained_delegation": true}]}}, "exploitable_truth": true},
-  {"finding": {"target": "dc.example.com", "topic": "ad", "title": "Kerberoastable admin", "has_reproduction": true, "state": {"accounts": [{"name": "svc_sql", "spn": true, "admin": true}]}}, "exploitable_truth": true},
-  {"finding": {"target": "dc.example.com", "topic": "ad", "title": "Kerberoastable non-admin, strong pwd", "has_reproduction": false, "state": {"accounts": [{"name": "svc_web", "spn": true, "admin": false}]}}, "exploitable_truth": false},
-  {"finding": {"target": "assets.example.com", "topic": "cloud", "title": "Public S3 bucket", "has_reproduction": true, "state": {"bucket_acl": {"grants": ["AllUsers"]}}}, "exploitable_truth": true},
-  {"finding": {"target": "app.example.com", "topic": "cloud", "title": "SSRF to metadata endpoint", "has_reproduction": true, "state": {"url": "http://169.254.169.254/latest/meta-data/"}}, "exploitable_truth": true},
-  {"finding": {"target": "com.example.app", "topic": "mobile", "title": "Debuggable release build", "has_reproduction": true, "state": {"debuggable": true}}, "exploitable_truth": true},
-  {"finding": {"target": "com.example.app", "topic": "mobile", "title": "allowBackup only", "has_reproduction": false, "state": {"allow_backup": true}}, "exploitable_truth": false},
-  {"finding": {"target": "AP-Corp", "topic": "wireless", "title": "Open Wi-Fi", "has_reproduction": true, "state": {"encryption": "open"}}, "exploitable_truth": true},
-  {"finding": {"target": "AP-Corp", "topic": "wireless", "title": "WPA2 strong PSK", "has_reproduction": false, "state": {"encryption": "wpa2"}}, "exploitable_truth": false},
-  {"finding": {"target": "vpn.example.com", "topic": "exploitdev", "title": "Missing NX + canary (no vuln yet)", "has_reproduction": false, "state": {"nx": false, "canary": false}}, "exploitable_truth": false},
-  {"finding": {"target": "fw.example.com", "topic": "reversing", "title": "gets() import present (no proven overflow)", "has_reproduction": false, "state": {"imports": ["gets"]}}, "exploitable_truth": false},
-  {"finding": {"target": "example.com", "topic": "social", "title": "Domain spoofable (no SPF/DMARC)", "has_reproduction": true, "state": {"spf": false, "dmarc": false}}, "exploitable_truth": true}
+  {
+    "finding": {
+      "target": "app1.example.com",
+      "topic": "web",
+      "title": "Reflected XSS, unescaped, no CSP",
+      "has_reproduction": true,
+      "state": {
+        "param_value": "<svg onload=alert(1)>",
+        "response_body": "results for <svg onload=alert(1)>",
+        "response_headers": {
+          "Server": "nginx"
+        }
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-79",
+    "difficulty": "easy",
+    "label_rationale": "Dangerous chars reflected unencoded, no CSP to mitigate."
+  },
+  {
+    "finding": {
+      "target": "app2.example.com",
+      "topic": "web",
+      "title": "Reflection but HTML-encoded",
+      "has_reproduction": false,
+      "state": {
+        "param_value": "<b>x</b>",
+        "response_body": "q=&lt;b&gt;x&lt;/b&gt;",
+        "response_headers": {
+          "Content-Security-Policy": "default-src 'self'"
+        }
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-79",
+    "difficulty": "medium",
+    "label_rationale": "Input encoded on output; CSP present. Not exploitable."
+  },
+  {
+    "finding": {
+      "target": "app3.example.com",
+      "topic": "web",
+      "title": "Stored XSS in comment field",
+      "has_reproduction": true,
+      "state": {
+        "param_value": "<img src=x onerror=fetch('//c2')>",
+        "response_body": "<div class=comment><img src=x onerror=fetch('//c2')></div>"
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-79",
+    "difficulty": "easy",
+    "label_rationale": "Payload persisted and rendered unescaped."
+  },
+  {
+    "finding": {
+      "target": "app4.example.com",
+      "topic": "web",
+      "title": "Error-based SQLi (MySQL)",
+      "has_reproduction": true,
+      "state": {
+        "response_body": "You have an error in your SQL syntax near ''1'"
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-89",
+    "difficulty": "easy",
+    "label_rationale": "DB error leaks into response on quote injection."
+  },
+  {
+    "finding": {
+      "target": "app5.example.com",
+      "topic": "web",
+      "title": "SQL-like word in normal content (no error)",
+      "has_reproduction": false,
+      "state": {
+        "response_body": "Our SQL training course covers syntax basics."
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-89",
+    "difficulty": "hard",
+    "label_rationale": "Contains 'SQL' and 'syntax' but is benign prose, no DB error signature."
+  },
+  {
+    "finding": {
+      "target": "app6.example.com",
+      "topic": "web",
+      "title": "Open redirect via next= param",
+      "has_reproduction": true,
+      "state": {
+        "location_header": "https://evil.example/phish",
+        "param_value": "https://evil.example/phish"
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-601",
+    "difficulty": "easy",
+    "label_rationale": "Location driven by user input to external host."
+  },
+  {
+    "finding": {
+      "target": "app7.example.com",
+      "topic": "web",
+      "title": "Redirect to internal path only",
+      "has_reproduction": false,
+      "state": {
+        "location_header": "/dashboard",
+        "param_value": "/dashboard"
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-601",
+    "difficulty": "medium",
+    "label_rationale": "Relative internal redirect, not attacker-controlled external."
+  },
+  {
+    "finding": {
+      "target": "app8.example.com",
+      "topic": "web",
+      "title": "Missing security headers only",
+      "has_reproduction": false,
+      "state": {
+        "response_headers": {
+          "Server": "nginx"
+        }
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-693",
+    "difficulty": "medium",
+    "label_rationale": "Missing CSP/HSTS is hardening debt, not an exploitable finding by itself."
+  },
+  {
+    "finding": {
+      "target": "app9.example.com",
+      "topic": "web",
+      "title": "SSRF via url param to internal service",
+      "has_reproduction": true,
+      "state": {
+        "param_value": "http://127.0.0.1:8080/admin",
+        "response_body": "internal admin panel: users=..."
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-918",
+    "difficulty": "medium",
+    "label_rationale": "Server fetched attacker-supplied internal URL and returned its content."
+  },
+  {
+    "finding": {
+      "target": "host1.example.com",
+      "topic": "network",
+      "title": "Unauthenticated Redis exposed",
+      "has_reproduction": true,
+      "state": {
+        "open_ports": [
+          6379
+        ]
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-306",
+    "difficulty": "easy",
+    "label_rationale": "Redis with no auth on the network = RCE/data access."
+  },
+  {
+    "finding": {
+      "target": "host2.example.com",
+      "topic": "network",
+      "title": "Unauthenticated MongoDB exposed",
+      "has_reproduction": true,
+      "state": {
+        "open_ports": [
+          27017
+        ]
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-306",
+    "difficulty": "easy",
+    "label_rationale": "MongoDB default no-auth exposure."
+  },
+  {
+    "finding": {
+      "target": "host3.example.com",
+      "topic": "network",
+      "title": "Docker API exposed",
+      "has_reproduction": true,
+      "state": {
+        "open_ports": [
+          2375
+        ]
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-306",
+    "difficulty": "easy",
+    "label_rationale": "Unauthenticated Docker API = host RCE."
+  },
+  {
+    "finding": {
+      "target": "host4.example.com",
+      "topic": "network",
+      "title": "Only SSH and HTTP open",
+      "has_reproduction": false,
+      "state": {
+        "open_ports": [
+          22,
+          80
+        ]
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-200",
+    "difficulty": "medium",
+    "label_rationale": "Standard managed services, no exposed datastore."
+  },
+  {
+    "finding": {
+      "target": "host5.example.com",
+      "topic": "network",
+      "title": "Telnet open on legacy device",
+      "has_reproduction": true,
+      "state": {
+        "open_ports": [
+          23
+        ]
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-319",
+    "difficulty": "medium",
+    "label_rationale": "Cleartext admin protocol; credentials sniffable, often default creds."
+  },
+  {
+    "finding": {
+      "target": "host6.example.com",
+      "topic": "network",
+      "title": "FTP open, anonymous unknown",
+      "has_reproduction": false,
+      "state": {
+        "open_ports": [
+          21,
+          443
+        ]
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-319",
+    "difficulty": "hard",
+    "label_rationale": "FTP present but exposure depends on anon/creds; not exploitable without more."
+  },
+  {
+    "finding": {
+      "target": "svc1.example.com",
+      "topic": "crypto",
+      "title": "JWT accepts alg=none",
+      "has_reproduction": true,
+      "state": {
+        "jwt_alg": "none"
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-347",
+    "difficulty": "easy",
+    "label_rationale": "Signature bypass; forge any token."
+  },
+  {
+    "finding": {
+      "target": "svc2.example.com",
+      "topic": "crypto",
+      "title": "MD5 used for content ETag",
+      "has_reproduction": false,
+      "state": {
+        "algorithms": [
+          "md5"
+        ]
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-327",
+    "difficulty": "hard",
+    "label_rationale": "Weak hash but used for non-security integrity; not exploitable."
+  },
+  {
+    "finding": {
+      "target": "svc3.example.com",
+      "topic": "crypto",
+      "title": "MD5 used to hash passwords",
+      "has_reproduction": true,
+      "state": {
+        "algorithms": [
+          "md5"
+        ],
+        "context": "password-storage"
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-916",
+    "difficulty": "medium",
+    "label_rationale": "Fast unsalted hash for passwords = crackable at scale."
+  },
+  {
+    "finding": {
+      "target": "svc4.example.com",
+      "topic": "crypto",
+      "title": "Low-entropy signing secret",
+      "has_reproduction": true,
+      "state": {
+        "secret": "aaaaaaaa"
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-331",
+    "difficulty": "easy",
+    "label_rationale": "Guessable key; forge signatures."
+  },
+  {
+    "finding": {
+      "target": "svc5.example.com",
+      "topic": "crypto",
+      "title": "High-entropy secret",
+      "has_reproduction": false,
+      "state": {
+        "secret": "G7#kQ9v!zL2@pR5^wX8&nM4"
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-331",
+    "difficulty": "medium",
+    "label_rationale": "Strong random secret, not guessable."
+  },
+  {
+    "finding": {
+      "target": "svc6.example.com",
+      "topic": "crypto",
+      "title": "3DES in transit",
+      "has_reproduction": false,
+      "state": {
+        "algorithms": [
+          "3des"
+        ]
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-327",
+    "difficulty": "hard",
+    "label_rationale": "Deprecated (Sweet32) but not trivially exploitable in most deployments."
+  },
+  {
+    "finding": {
+      "target": "dc1.corp.example.com",
+      "topic": "ad",
+      "title": "Unconstrained delegation on server",
+      "has_reproduction": true,
+      "state": {
+        "accounts": [
+          {
+            "name": "SRV01$",
+            "unconstrained_delegation": true
+          }
+        ]
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-266",
+    "difficulty": "medium",
+    "label_rationale": "Capture TGTs of connecting privileged users."
+  },
+  {
+    "finding": {
+      "target": "dc2.corp.example.com",
+      "topic": "ad",
+      "title": "Kerberoastable privileged service account",
+      "has_reproduction": true,
+      "state": {
+        "accounts": [
+          {
+            "name": "svc_sql",
+            "spn": true,
+            "admin": true
+          }
+        ]
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-522",
+    "difficulty": "medium",
+    "label_rationale": "SPN on admin account; offline crack of TGS to DA."
+  },
+  {
+    "finding": {
+      "target": "dc3.corp.example.com",
+      "topic": "ad",
+      "title": "Kerberoastable low-priv, strong password",
+      "has_reproduction": false,
+      "state": {
+        "accounts": [
+          {
+            "name": "svc_web",
+            "spn": true,
+            "admin": false
+          }
+        ]
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-522",
+    "difficulty": "hard",
+    "label_rationale": "Roastable but non-privileged and strong pwd; low practical impact."
+  },
+  {
+    "finding": {
+      "target": "dc4.corp.example.com",
+      "topic": "ad",
+      "title": "AS-REP roastable admin",
+      "has_reproduction": true,
+      "state": {
+        "accounts": [
+          {
+            "name": "admin_bak",
+            "asrep": true,
+            "admin": true
+          }
+        ]
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-522",
+    "difficulty": "medium",
+    "label_rationale": "DONT_REQ_PREAUTH on privileged account."
+  },
+  {
+    "finding": {
+      "target": "dc5.corp.example.com",
+      "topic": "ad",
+      "title": "Normal account, no flags",
+      "has_reproduction": false,
+      "state": {
+        "accounts": [
+          {
+            "name": "jdoe",
+            "spn": false,
+            "admin": false
+          }
+        ]
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-noinfo",
+    "difficulty": "easy",
+    "label_rationale": "No roastable/delegation flags."
+  },
+  {
+    "finding": {
+      "target": "cloud1.example.com",
+      "topic": "cloud",
+      "title": "Public S3 bucket (AllUsers)",
+      "has_reproduction": true,
+      "state": {
+        "bucket_acl": {
+          "grants": [
+            "AllUsers"
+          ]
+        }
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-732",
+    "difficulty": "easy",
+    "label_rationale": "World-readable object storage."
+  },
+  {
+    "finding": {
+      "target": "cloud2.example.com",
+      "topic": "cloud",
+      "title": "Private bucket",
+      "has_reproduction": false,
+      "state": {
+        "bucket_acl": {
+          "grants": [
+            "owner"
+          ],
+          "public": false
+        }
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-732",
+    "difficulty": "easy",
+    "label_rationale": "No public grant."
+  },
+  {
+    "finding": {
+      "target": "cloud3.example.com",
+      "topic": "cloud",
+      "title": "SSRF to AWS metadata",
+      "has_reproduction": true,
+      "state": {
+        "url": "http://169.254.169.254/latest/meta-data/iam/security-credentials/"
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-918",
+    "difficulty": "easy",
+    "label_rationale": "Reaches IMDS; steal role credentials."
+  },
+  {
+    "finding": {
+      "target": "cloud4.example.com",
+      "topic": "cloud",
+      "title": "Request to GCP metadata host",
+      "has_reproduction": true,
+      "state": {
+        "url": "http://metadata.google.internal/computeMetadata/v1/"
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-918",
+    "difficulty": "medium",
+    "label_rationale": "GCP metadata endpoint reachable."
+  },
+  {
+    "finding": {
+      "target": "cloud5.example.com",
+      "topic": "cloud",
+      "title": "External API call (not metadata)",
+      "has_reproduction": false,
+      "state": {
+        "url": "https://api.stripe.com/v1/charges"
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-918",
+    "difficulty": "medium",
+    "label_rationale": "Legitimate external egress, not a metadata SSRF."
+  },
+  {
+    "finding": {
+      "target": "com.example.app1",
+      "topic": "mobile",
+      "title": "Debuggable release build",
+      "has_reproduction": true,
+      "state": {
+        "debuggable": true
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-489",
+    "difficulty": "medium",
+    "label_rationale": "Attacker can attach a debugger to a release app."
+  },
+  {
+    "finding": {
+      "target": "com.example.app2",
+      "topic": "mobile",
+      "title": "Cleartext traffic allowed",
+      "has_reproduction": true,
+      "state": {
+        "cleartext_traffic": true
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-319",
+    "difficulty": "medium",
+    "label_rationale": "App sends data over HTTP; MITM."
+  },
+  {
+    "finding": {
+      "target": "com.example.app3",
+      "topic": "mobile",
+      "title": "allowBackup only",
+      "has_reproduction": false,
+      "state": {
+        "allow_backup": true
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-530",
+    "difficulty": "hard",
+    "label_rationale": "Backup extraction needs local/adb access; low remote impact alone."
+  },
+  {
+    "finding": {
+      "target": "com.example.app4",
+      "topic": "mobile",
+      "title": "Exported activity without permission",
+      "has_reproduction": true,
+      "state": {
+        "exported_components": [
+          {
+            "name": ".AdminActivity",
+            "permission": null
+          }
+        ]
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-926",
+    "difficulty": "medium",
+    "label_rationale": "Any app can invoke a sensitive exported component."
+  },
+  {
+    "finding": {
+      "target": "com.example.app5",
+      "topic": "mobile",
+      "title": "Exported component with signature permission",
+      "has_reproduction": false,
+      "state": {
+        "exported_components": [
+          {
+            "name": ".SyncService",
+            "permission": "signature"
+          }
+        ]
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-926",
+    "difficulty": "hard",
+    "label_rationale": "Guarded by signature-level permission."
+  },
+  {
+    "finding": {
+      "target": "AP-Corp-1",
+      "topic": "wireless",
+      "title": "Open Wi-Fi",
+      "has_reproduction": true,
+      "state": {
+        "encryption": "open"
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-319",
+    "difficulty": "easy",
+    "label_rationale": "No encryption; passive capture and injection."
+  },
+  {
+    "finding": {
+      "target": "AP-Corp-2",
+      "topic": "wireless",
+      "title": "WEP",
+      "has_reproduction": true,
+      "state": {
+        "encryption": "wep"
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-327",
+    "difficulty": "easy",
+    "label_rationale": "WEP crackable in minutes."
+  },
+  {
+    "finding": {
+      "target": "AP-Corp-3",
+      "topic": "wireless",
+      "title": "WPA2 with WPS enabled",
+      "has_reproduction": true,
+      "state": {
+        "encryption": "wpa2",
+        "wps_enabled": true
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-307",
+    "difficulty": "medium",
+    "label_rationale": "WPS PIN brute force / Pixie-Dust recovers PSK."
+  },
+  {
+    "finding": {
+      "target": "AP-Corp-4",
+      "topic": "wireless",
+      "title": "WPA2 strong PSK, no WPS",
+      "has_reproduction": false,
+      "state": {
+        "encryption": "wpa2",
+        "wps_enabled": false
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-noinfo",
+    "difficulty": "medium",
+    "label_rationale": "Only offline crack of a strong PSK; not practically exploitable."
+  },
+  {
+    "finding": {
+      "target": "AP-Corp-5",
+      "topic": "wireless",
+      "title": "WPA3 SAE",
+      "has_reproduction": false,
+      "state": {
+        "encryption": "wpa3"
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-noinfo",
+    "difficulty": "hard",
+    "label_rationale": "SAE resists offline crack; check transition mode separately."
+  },
+  {
+    "finding": {
+      "target": "bin1.example.com",
+      "topic": "exploitdev",
+      "title": "No NX and no canary, with known overflow",
+      "has_reproduction": true,
+      "state": {
+        "nx": false,
+        "canary": false,
+        "has_known_overflow": true
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-787",
+    "difficulty": "medium",
+    "label_rationale": "Missing mitigations plus an actual overflow primitive = exploitable."
+  },
+  {
+    "finding": {
+      "target": "bin2.example.com",
+      "topic": "exploitdev",
+      "title": "Missing mitigations, no vuln",
+      "has_reproduction": false,
+      "state": {
+        "nx": false,
+        "canary": false
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-693",
+    "difficulty": "hard",
+    "label_rationale": "Weak hardening is not a vulnerability without a primitive."
+  },
+  {
+    "finding": {
+      "target": "bin3.example.com",
+      "topic": "exploitdev",
+      "title": "Full mitigations",
+      "has_reproduction": false,
+      "state": {
+        "nx": true,
+        "canary": true,
+        "pie": true,
+        "relro": "full"
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-noinfo",
+    "difficulty": "easy",
+    "label_rationale": "Hardened binary, nothing to flag."
+  },
+  {
+    "finding": {
+      "target": "bin4.example.com",
+      "topic": "exploitdev",
+      "title": "No PIE, partial RELRO",
+      "has_reproduction": false,
+      "state": {
+        "pie": false,
+        "relro": "partial"
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-693",
+    "difficulty": "hard",
+    "label_rationale": "Lowers the bar but not exploitable alone."
+  },
+  {
+    "finding": {
+      "target": "fw1.example.com",
+      "topic": "reversing",
+      "title": "gets() import, no proven overflow",
+      "has_reproduction": false,
+      "state": {
+        "imports": [
+          "gets"
+        ]
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-242",
+    "difficulty": "hard",
+    "label_rationale": "Banned function present but no demonstrated reachable overflow."
+  },
+  {
+    "finding": {
+      "target": "fw2.example.com",
+      "topic": "reversing",
+      "title": "system() with tainted string evidence",
+      "has_reproduction": true,
+      "state": {
+        "imports": [
+          "system"
+        ],
+        "strings": [
+          "/bin/sh -c %s"
+        ]
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-78",
+    "difficulty": "medium",
+    "label_rationale": "Command sink with format string suggests injection path."
+  },
+  {
+    "finding": {
+      "target": "fw3.example.com",
+      "topic": "reversing",
+      "title": "Hardcoded private key string",
+      "has_reproduction": true,
+      "state": {
+        "strings": [
+          "-----BEGIN RSA PRIVATE KEY-----"
+        ]
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-321",
+    "difficulty": "medium",
+    "label_rationale": "Embedded private key extractable from the binary."
+  },
+  {
+    "finding": {
+      "target": "fw4.example.com",
+      "topic": "reversing",
+      "title": "Only benign imports",
+      "has_reproduction": false,
+      "state": {
+        "imports": [
+          "printf",
+          "malloc"
+        ]
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-noinfo",
+    "difficulty": "easy",
+    "label_rationale": "No dangerous sinks."
+  },
+  {
+    "finding": {
+      "target": "example1.com",
+      "topic": "social",
+      "title": "No SPF and no DMARC",
+      "has_reproduction": true,
+      "state": {
+        "spf": false,
+        "dmarc": false
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-290",
+    "difficulty": "easy",
+    "label_rationale": "Domain trivially spoofable for phishing (authorized assessment)."
+  },
+  {
+    "finding": {
+      "target": "example2.com",
+      "topic": "social",
+      "title": "DMARC p=none",
+      "has_reproduction": true,
+      "state": {
+        "dmarc": true,
+        "dmarc_policy": "none"
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-290",
+    "difficulty": "medium",
+    "label_rationale": "Monitoring only; spoofed mail still delivered."
+  },
+  {
+    "finding": {
+      "target": "example3.com",
+      "topic": "social",
+      "title": "DMARC p=reject, SPF, DKIM",
+      "has_reproduction": false,
+      "state": {
+        "spf": true,
+        "dkim": true,
+        "dmarc": true,
+        "dmarc_policy": "reject"
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-290",
+    "difficulty": "medium",
+    "label_rationale": "Enforced; spoofing blocked."
+  },
+  {
+    "finding": {
+      "target": "example4.com",
+      "topic": "social",
+      "title": "Look-alike domain registered",
+      "has_reproduction": true,
+      "state": {
+        "lookalike_registered": true,
+        "spf": true,
+        "dmarc": true,
+        "dmarc_policy": "reject"
+      }
+    },
+    "exploitable_truth": true,
+    "cwe": "CWE-290",
+    "difficulty": "hard",
+    "label_rationale": "Even with enforcement, a registered look-alike enables convincing phishing."
+  },
+  {
+    "finding": {
+      "target": "asset1.example.com",
+      "topic": "recon",
+      "title": "admin subdomain discovered",
+      "has_reproduction": false,
+      "state": {
+        "host": "admin.example.com"
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-noinfo",
+    "difficulty": "hard",
+    "label_rationale": "Interesting attack surface but discovery alone is not exploitable."
+  },
+  {
+    "finding": {
+      "target": "asset2.example.com",
+      "topic": "recon",
+      "title": "bare IP asset",
+      "has_reproduction": false,
+      "state": {
+        "url": "http://203.0.113.10/"
+      }
+    },
+    "exploitable_truth": false,
+    "cwe": "CWE-noinfo",
+    "difficulty": "easy",
+    "label_rationale": "Asset enumeration signal, not a vulnerability."
+  }
 ]
