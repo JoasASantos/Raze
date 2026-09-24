@@ -1,4 +1,4 @@
-"""OffSec One orchestration: propose -> validate -> queue.
+"""Raze orchestration: propose -> validate -> queue.
 
 The agent asks Raze for typed judgments about a candidate finding, then gates
 those judgments with deterministic validators behind the authorization boundary.
@@ -9,9 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from offsec_one.authz import Scope
-from offsec_one.topics import Signal, analyze
-from offsec_one.validators import ValidationResult, validate_finding
+from raze.authz import Scope
 from raze.judgments import (
     Exploitability,
     Impact,
@@ -20,11 +18,13 @@ from raze.judgments import (
     Reachability,
 )
 from raze.model import Raze
+from raze.topics import Signal, analyze
+from raze.validators import ValidationResult, validate_finding
 
 
 @dataclass
 class Finding:
-    """A candidate finding fed into OffSec One."""
+    """A candidate finding fed into Raze."""
 
     target: str
     topic: str
@@ -45,7 +45,7 @@ class Assessment:
     result: ValidationResult
 
 
-class OffSecOne:
+class RazeAgent:
     def __init__(
         self, raze: Raze | None = None, scope: Scope | None = None, run_analyzers: bool = True
     ) -> None:

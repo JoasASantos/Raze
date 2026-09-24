@@ -1,6 +1,6 @@
 import pytest
 
-from offsec_one.authz import Scope, ScopeError
+from raze.authz import Scope, ScopeError
 
 
 def test_in_scope_ok():

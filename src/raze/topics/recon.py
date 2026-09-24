@@ -5,7 +5,7 @@ from __future__ import annotations
 import ipaddress
 from urllib.parse import urlparse
 
-from offsec_one.topics.base import Signal
+from raze.topics.base import Signal
 
 INTERESTING = {
     "admin": "high", "root": "high", "vpn": "high", "jenkins": "high", "git": "high",

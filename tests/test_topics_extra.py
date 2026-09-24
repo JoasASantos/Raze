@@ -1,13 +1,12 @@
 """Tests for the ad/mobile/wireless/exploitdev/reversing/social analyzers."""
 
-from offsec_one.topics import ANALYZERS, PROPOSED_TOPICS, analyze
-from offsec_one.topics.ad import DelegationAnalyzer, KerberoastingAnalyzer
-from offsec_one.topics.exploitdev import MitigationAnalyzer
-from offsec_one.topics.mobile import AndroidManifestAnalyzer
-from offsec_one.topics.reversing import BinaryTriageAnalyzer
-from offsec_one.topics.social import EmailSpoofabilityAnalyzer
-from offsec_one.topics.wireless import WifiSecurityAnalyzer
-from raze.topics import ALL_TOPICS
+from raze.topics import ALL_TOPICS, ANALYZERS, PROPOSED_TOPICS, analyze
+from raze.topics.ad import DelegationAnalyzer, KerberoastingAnalyzer
+from raze.topics.exploitdev import MitigationAnalyzer
+from raze.topics.mobile import AndroidManifestAnalyzer
+from raze.topics.reversing import BinaryTriageAnalyzer
+from raze.topics.social import EmailSpoofabilityAnalyzer
+from raze.topics.wireless import WifiSecurityAnalyzer
 
 
 def _names(sigs):

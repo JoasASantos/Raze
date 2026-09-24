@@ -1,6 +1,6 @@
 # Topic Coverage
 
-Each topic is a module under `src/offsec_one/topics/` exposing tool interfaces and the Raze judgment schemas relevant to it. Interfaces are defined; concrete tool wiring is **proposed** (not yet implemented).
+Each topic is a module under `src/raze/topics/` exposing tool interfaces and the Raze judgment schemas relevant to it. Interfaces are defined; concrete tool wiring is **proposed** (not yet implemented).
 
 | Topic | Key | Example judgments |
 |-------|-----|-------------------|
@@ -20,7 +20,7 @@ Topic modules must call Raze only for **judgments**, and must route all state-ch
 
 ## Analyzer status
 
-Deterministic analyzers (in `src/offsec_one/topics/`) turn collected state into `Signal`s that become finding evidence. Registered in `topics/ANALYZERS`.
+Deterministic analyzers (in `src/raze/topics/`) turn collected state into `Signal`s that become finding evidence. Registered in `topics/ANALYZERS`.
 
 | Topic | Analyzers | Status |
 |-------|-----------|--------|

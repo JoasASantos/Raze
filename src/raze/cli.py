@@ -1,9 +1,9 @@
-"""OffSec One CLI.
+"""Raze CLI.
 
 Commands:
-  offsec-one assess FINDING [--scope S] [--backend echo|anthropic] [--model M] [--json]
-  offsec-one topics
-  offsec-one --version
+  raze assess FINDING [--scope S] [--backend echo|anthropic] [--model M] [--json]
+  raze topics
+  raze --version
 
 FINDING is a path to a JSON file, or '-' to read from stdin:
   {"target": "app.example.com", "topic": "web", "title": "...",
@@ -19,10 +19,10 @@ import argparse
 import json
 import sys
 
-from offsec_one.agent import Assessment, Finding, OffSecOne
-from offsec_one.authz import Scope, ScopeError
-from offsec_one.topics import ANALYZERS, PROPOSED_TOPICS
 from raze import Raze, __version__
+from raze.agent import Assessment, Finding, RazeAgent
+from raze.authz import Scope, ScopeError
+from raze.topics import ANALYZERS, PROPOSED_TOPICS
 
 EXIT_OK = 0
 EXIT_USAGE = 1
@@ -107,7 +107,7 @@ def _cmd_assess(args: argparse.Namespace) -> int:
         print(f"error: backend: {e}", file=sys.stderr)
         return EXIT_USAGE
 
-    agent = OffSecOne(raze=Raze(backend=backend), scope=scope, run_analyzers=not args.no_analyzers)
+    agent = RazeAgent(raze=Raze(backend=backend), scope=scope, run_analyzers=not args.no_analyzers)
 
     try:
         assessment = agent.assess(finding)
@@ -138,10 +138,10 @@ def _cmd_topics(_args: argparse.Namespace) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="offsec-one",
+        prog="raze",
         description="Offensive-security agent built on Raze (System One model, Jev family).",
     )
-    parser.add_argument("--version", action="version", version=f"OffSec One (raze {__version__})")
+    parser.add_argument("--version", action="version", version=f"Raze {__version__}")
     sub = parser.add_subparsers(dest="command")
 
     a = sub.add_parser("assess", help="Assess a finding (JSON file or '-' for stdin).")

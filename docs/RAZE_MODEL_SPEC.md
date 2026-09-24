@@ -47,4 +47,4 @@ Calibration is measured with `raze.calibration.expected_calibration_error` on a 
 Raze inputs are influenced by the target (page content, banners, responses). Therefore:
 - Raze output is **advisory**; a deterministic validator gates it.
 - Adversarial/target-controlled input **can** bias Raze's selection and priority. Claims like "nothing to inject" are false for target-influenced input and are not made here.
-- The validator's blocking conditions are explicit and testable — see [`src/offsec_one/validators.py`](../src/offsec_one/validators.py).
+- The validator's blocking conditions are explicit and testable — see [`src/raze/validators.py`](../src/raze/validators.py).

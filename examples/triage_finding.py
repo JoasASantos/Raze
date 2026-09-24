@@ -5,8 +5,7 @@ Run: python examples/triage_finding.py
 
 from __future__ import annotations
 
-from offsec_one import Finding, OffSecOne, Scope
-from raze import Raze
+from raze import Finding, Raze, RazeAgent, Scope
 
 
 def main() -> None:
@@ -15,7 +14,7 @@ def main() -> None:
         authorization_ref="ROE-signed-2026-09-23",
         targets=["*.example.com"],
     )
-    agent = OffSecOne(raze=Raze(), scope=scope)
+    agent = RazeAgent(raze=Raze(), scope=scope)
 
     finding = Finding(
         target="app.example.com",

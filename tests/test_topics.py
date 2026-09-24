@@ -1,11 +1,11 @@
 """Topic analyzer tests — deterministic detectors over collected data."""
 
-from offsec_one.topics import analyze
-from offsec_one.topics.cloud import BucketExposureAnalyzer, MetadataSSRFAnalyzer
-from offsec_one.topics.crypto import SecretEntropyAnalyzer, WeakAlgorithmAnalyzer, shannon_entropy
-from offsec_one.topics.network import PortExposureAnalyzer
-from offsec_one.topics.recon import AssetAnalyzer
-from offsec_one.topics.web import ReflectionAnalyzer, SecurityHeaderAnalyzer
+from raze.topics import analyze
+from raze.topics.cloud import BucketExposureAnalyzer, MetadataSSRFAnalyzer
+from raze.topics.crypto import SecretEntropyAnalyzer, WeakAlgorithmAnalyzer, shannon_entropy
+from raze.topics.network import PortExposureAnalyzer
+from raze.topics.recon import AssetAnalyzer
+from raze.topics.web import ReflectionAnalyzer, SecurityHeaderAnalyzer
 
 
 def _names(signals):

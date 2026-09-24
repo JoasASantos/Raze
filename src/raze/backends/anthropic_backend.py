@@ -2,7 +2,7 @@
 
 Wires the provider-agnostic LLMBackend to the Anthropic SDK. Requires the
 `anthropic` package and credentials (ANTHROPIC_API_KEY or an `ant auth login`
-profile). Install with: pip install "offsec-one[anthropic]".
+profile). Install with: pip install "raze[anthropic]".
 
 Default model is claude-opus-5. For high-volume bulk judging you can pass a
 cheaper worker model (e.g. model="claude-sonnet-5" or "claude-haiku-4-5").
@@ -27,7 +27,7 @@ class AnthropicBackend(LLMBackend):
             import anthropic
         except ImportError as exc:  # pragma: no cover - import guard
             raise ImportError(
-                'AnthropicBackend needs the anthropic SDK. Install: pip install "offsec-one[anthropic]"'
+                'AnthropicBackend needs the anthropic SDK. Install: pip install "raze[anthropic]"'
             ) from exc
 
         self.client = client or anthropic.Anthropic()

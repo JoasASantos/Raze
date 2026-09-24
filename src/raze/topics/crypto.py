@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 from collections import Counter
 
-from offsec_one.topics.base import Signal
+from raze.topics.base import Signal
 
 WEAK_ALGORITHMS = {
     "md5": ("high", "MD5 is broken for collision resistance"),

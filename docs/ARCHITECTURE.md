@@ -4,7 +4,7 @@
 
 ```
                  ┌─────────────────────────────────────────────┐
-                 │                 OffSec One                    │
+                 │                 Raze                    │
                  │                (agent / harness)              │
                  │                                               │
   operator ─────▶│  authorization + scope gate                   │
@@ -23,7 +23,7 @@
                  └─────────────────────────────────────────────┘
 ```
 
-OffSec One never lets a model's probability be the last word. Every judgment passes through a **deterministic validator** before it reaches the operator's queue.
+Raze never lets a model's probability be the last word. Every judgment passes through a **deterministic validator** before it reaches the operator's queue.
 
 ## Components
 
@@ -35,10 +35,10 @@ A callable that maps `(context, state)` to a **typed judgment**: a Pydantic mode
 - `backends/llm.py` — `LLMBackend`: provider-agnostic; you inject a `complete_fn` and it builds the System One prompt, extracts JSON, and validates it into the typed judgment.
 - `backends/anthropic_backend.py` — `AnthropicBackend`: `LLMBackend` wired to the Anthropic SDK (Claude). Default model `claude-opus-5`.
 - `calibration.py` — Expected Calibration Error over a labeled test set (aggregate only).
-- `topics.py` — the offensive-security topic taxonomy.
+- `topics/` — the offensive-security topic taxonomy (`topics/taxonomy.py`) and analyzers.
 
-### OffSec One — the harness (`src/offsec_one/`)
-Orchestrates topic modules, calls Raze for decisions, runs validators, and enforces authorization.
+### RazeAgent — the harness (`src/raze/agent.py`)
+Orchestrates topic analyzers, calls the `Raze` model for decisions, runs validators, and enforces authorization.
 
 - `agent.py` — the orchestration loop (propose → validate → queue).
 - `validators.py` — deterministic checks that can downgrade or drop a finding.

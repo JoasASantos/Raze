@@ -6,18 +6,19 @@ no analyzer yet are listed in PROPOSED_TOPICS — declared, honestly not impleme
 
 from __future__ import annotations
 
-from offsec_one.topics.ad import DelegationAnalyzer, KerberoastingAnalyzer
-from offsec_one.topics.base import Analyzer, Signal
-from offsec_one.topics.cloud import BucketExposureAnalyzer, MetadataSSRFAnalyzer
-from offsec_one.topics.crypto import SecretEntropyAnalyzer, WeakAlgorithmAnalyzer
-from offsec_one.topics.exploitdev import MitigationAnalyzer
-from offsec_one.topics.mobile import AndroidManifestAnalyzer
-from offsec_one.topics.network import PortExposureAnalyzer
-from offsec_one.topics.recon import AssetAnalyzer
-from offsec_one.topics.reversing import BinaryTriageAnalyzer
-from offsec_one.topics.social import EmailSpoofabilityAnalyzer
-from offsec_one.topics.web import ReflectionAnalyzer, SecurityHeaderAnalyzer
-from offsec_one.topics.wireless import WifiSecurityAnalyzer
+from raze.topics.ad import DelegationAnalyzer, KerberoastingAnalyzer
+from raze.topics.base import Analyzer, Signal
+from raze.topics.cloud import BucketExposureAnalyzer, MetadataSSRFAnalyzer
+from raze.topics.crypto import SecretEntropyAnalyzer, WeakAlgorithmAnalyzer
+from raze.topics.exploitdev import MitigationAnalyzer
+from raze.topics.mobile import AndroidManifestAnalyzer
+from raze.topics.network import PortExposureAnalyzer
+from raze.topics.recon import AssetAnalyzer
+from raze.topics.reversing import BinaryTriageAnalyzer
+from raze.topics.social import EmailSpoofabilityAnalyzer
+from raze.topics.taxonomy import ALL_TOPICS, Topic
+from raze.topics.web import ReflectionAnalyzer, SecurityHeaderAnalyzer
+from raze.topics.wireless import WifiSecurityAnalyzer
 
 ANALYZERS: dict[str, list[Analyzer]] = {
     "web": [ReflectionAnalyzer(), SecurityHeaderAnalyzer()],
@@ -45,4 +46,12 @@ def analyze(topic: str, state: dict) -> list[Signal]:
     return signals
 
 
-__all__ = ["ANALYZERS", "PROPOSED_TOPICS", "Analyzer", "Signal", "analyze"]
+__all__ = [
+    "ALL_TOPICS",
+    "ANALYZERS",
+    "PROPOSED_TOPICS",
+    "Analyzer",
+    "Signal",
+    "Topic",
+    "analyze",
+]

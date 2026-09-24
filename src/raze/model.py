@@ -65,7 +65,7 @@ class Raze:
     """System One model: `state -> typed judgment + probability`.
 
     Raze does exactly one narrow thing per call. It does not plan, browse, or
-    execute tools. The harness (OffSec One) composes many Raze calls and gates
+    execute tools. The harness (Raze) composes many Raze calls and gates
     them with deterministic validators.
     """
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from offsec_one.topics.base import Signal
+from raze.topics.base import Signal
 
 # port -> (service, severity, why)
 RISKY_PORTS = {

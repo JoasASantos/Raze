@@ -2,9 +2,9 @@
 
 import pytest
 
-from offsec_one.agent import Finding, OffSecOne
-from offsec_one.bench import BenchCase, run
 from raze import Raze
+from raze.agent import Finding, RazeAgent
+from raze.bench import BenchCase, run
 
 
 def _cases():
@@ -17,7 +17,7 @@ def _cases():
 
 
 def _factory():
-    return OffSecOne(raze=Raze())
+    return RazeAgent(raze=Raze())
 
 
 def test_report_has_metadata_and_ece():

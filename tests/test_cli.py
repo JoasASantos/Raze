@@ -2,7 +2,7 @@
 
 import json
 
-from offsec_one.cli import main
+from raze.cli import main
 
 
 def _write(tmp_path, name, obj):

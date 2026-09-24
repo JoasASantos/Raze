@@ -20,8 +20,8 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from offsec_one.agent import Finding, OffSecOne
-from offsec_one.bench import BenchCase, run
+from raze.agent import Finding, RazeAgent
+from raze.bench import BenchCase, run
 from raze import Raze
 
 
@@ -40,14 +40,14 @@ def _load_cases(path: str) -> list[BenchCase]:
 
 
 def _agent_factory(backend_name: str, model: str | None):
-    def factory() -> OffSecOne:
+    def factory() -> RazeAgent:
         if backend_name == "anthropic":
             from raze.backends import AnthropicBackend
 
             backend = AnthropicBackend(model=model) if model else AnthropicBackend()
         else:
             backend = None
-        return OffSecOne(raze=Raze(backend=backend))
+        return RazeAgent(raze=Raze(backend=backend))
 
     return factory
 

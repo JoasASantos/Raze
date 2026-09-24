@@ -1,4 +1,4 @@
-"""Benchmark harness for OffSec One.
+"""Benchmark harness for Raze.
 
 Runs a labeled dataset through the agent multiple times with alternating case
 order, records the harness version and code state per run, and reports aggregate
@@ -21,8 +21,8 @@ from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 
-from offsec_one.agent import Finding, OffSecOne
 from raze import __version__ as raze_version
+from raze.agent import Finding, RazeAgent
 from raze.calibration import expected_calibration_error
 from raze.judgments import ExploitVerdict
 
@@ -103,7 +103,7 @@ def _ordered(cases: list[BenchCase], run_index: int, alternate: bool) -> list[Be
 
 def run(
     cases: list[BenchCase],
-    agent_factory: Callable[[], OffSecOne],
+    agent_factory: Callable[[], RazeAgent],
     *,
     runs: int = 5,
     alternate: bool = True,

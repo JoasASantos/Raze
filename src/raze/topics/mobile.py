@@ -6,7 +6,7 @@ state: {"cleartext_traffic": bool, "allow_backup": bool, "debuggable": bool,
 
 from __future__ import annotations
 
-from offsec_one.topics.base import Signal
+from raze.topics.base import Signal
 
 
 class AndroidManifestAnalyzer:

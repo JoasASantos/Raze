@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import re
 
-from offsec_one.topics.base import Signal
+from raze.topics.base import Signal
 
 # Dangerous imported functions -> (severity, why)
 DANGEROUS_IMPORTS = {

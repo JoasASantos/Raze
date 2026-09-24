@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from urllib.parse import urlparse
 
-from offsec_one.topics.base import Signal
+from raze.topics.base import Signal
 
 # Cloud metadata endpoints reachable via SSRF.
 METADATA_HOSTS = {

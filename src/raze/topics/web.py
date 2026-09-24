@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import html
 
-from offsec_one.topics.base import Signal
+from raze.topics.base import Signal
 
 DANGEROUS_CHARS = ("<", ">", '"', "'", "(", ")")
 

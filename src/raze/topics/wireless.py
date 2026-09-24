@@ -6,7 +6,7 @@ state: {"encryption": "open"|"wep"|"wpa"|"wpa2"|"wpa3", "wps_enabled": bool,
 
 from __future__ import annotations
 
-from offsec_one.topics.base import Signal
+from raze.topics.base import Signal
 
 _ENC = {
     "open": ("critical", "open network — no encryption"),
