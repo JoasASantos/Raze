@@ -6,12 +6,18 @@ no analyzer yet are listed in PROPOSED_TOPICS — declared, honestly not impleme
 
 from __future__ import annotations
 
+from offsec_one.topics.ad import DelegationAnalyzer, KerberoastingAnalyzer
 from offsec_one.topics.base import Analyzer, Signal
 from offsec_one.topics.cloud import BucketExposureAnalyzer, MetadataSSRFAnalyzer
 from offsec_one.topics.crypto import SecretEntropyAnalyzer, WeakAlgorithmAnalyzer
+from offsec_one.topics.exploitdev import MitigationAnalyzer
+from offsec_one.topics.mobile import AndroidManifestAnalyzer
 from offsec_one.topics.network import PortExposureAnalyzer
 from offsec_one.topics.recon import AssetAnalyzer
+from offsec_one.topics.reversing import BinaryTriageAnalyzer
+from offsec_one.topics.social import EmailSpoofabilityAnalyzer
 from offsec_one.topics.web import ReflectionAnalyzer, SecurityHeaderAnalyzer
+from offsec_one.topics.wireless import WifiSecurityAnalyzer
 
 ANALYZERS: dict[str, list[Analyzer]] = {
     "web": [ReflectionAnalyzer(), SecurityHeaderAnalyzer()],
@@ -19,10 +25,16 @@ ANALYZERS: dict[str, list[Analyzer]] = {
     "network": [PortExposureAnalyzer()],
     "cloud": [BucketExposureAnalyzer(), MetadataSSRFAnalyzer()],
     "crypto": [WeakAlgorithmAnalyzer(), SecretEntropyAnalyzer()],
+    "ad": [KerberoastingAnalyzer(), DelegationAnalyzer()],
+    "mobile": [AndroidManifestAnalyzer()],
+    "wireless": [WifiSecurityAnalyzer()],
+    "exploitdev": [MitigationAnalyzer()],
+    "reversing": [BinaryTriageAnalyzer()],
+    "social": [EmailSpoofabilityAnalyzer()],
 }
 
-# Declared in the taxonomy, analyzers not yet implemented (see docs/TOPICS.md).
-PROPOSED_TOPICS = ["ad", "mobile", "wireless", "exploitdev", "reversing", "social"]
+# Every taxonomy topic now has at least one analyzer.
+PROPOSED_TOPICS: list[str] = []
 
 
 def analyze(topic: str, state: dict) -> list[Signal]:

@@ -29,6 +29,13 @@ Deterministic analyzers (in `src/offsec_one/topics/`) turn collected state into 
 | `network` | `PortExposureAnalyzer` | **implemented** |
 | `cloud` | `BucketExposureAnalyzer`, `MetadataSSRFAnalyzer` | **implemented** |
 | `crypto` | `WeakAlgorithmAnalyzer`, `SecretEntropyAnalyzer` | **implemented** |
-| `ad`, `mobile`, `wireless`, `exploitdev`, `reversing`, `social` | — | **proposed** (`PROPOSED_TOPICS`) |
+| `ad` | `KerberoastingAnalyzer`, `DelegationAnalyzer` | **implemented** |
+| `mobile` | `AndroidManifestAnalyzer` | **implemented** |
+| `wireless` | `WifiSecurityAnalyzer` | **implemented** |
+| `exploitdev` | `MitigationAnalyzer` | **implemented** |
+| `reversing` | `BinaryTriageAnalyzer` | **implemented** |
+| `social` | `EmailSpoofabilityAnalyzer` (authorized assessments only) | **implemented** |
+
+Every taxonomy topic now has at least one analyzer (`PROPOSED_TOPICS == []`). Analyzers stay passive — depth (more detectors per topic, active traffic-sending tools) is the next layer.
 
 Analyzers are passive: they interpret data already collected under an authorized scope and never send traffic to a target.
