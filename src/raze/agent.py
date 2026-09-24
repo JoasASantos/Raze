@@ -11,6 +11,7 @@ import time
 from dataclasses import dataclass, field
 
 from raze.authz import Scope
+from raze.classify import infer_class
 from raze.decide import Decision, build_decision
 from raze.judgments import (
     CombinedJudgment,
@@ -124,11 +125,13 @@ class RazeAgent:
             novelty=judgment.novelty,
             has_reproduction=finding.has_reproduction,
         )
+        vuln_class = infer_class(finding.topic, signals)
         return build_decision(
             finding_title=finding.title,
             judgment=judgment,
             signals=signals,
             validation=result,
             has_reproduction=finding.has_reproduction,
+            vuln_class=vuln_class,
             latency_ms=latency_ms,
         )
