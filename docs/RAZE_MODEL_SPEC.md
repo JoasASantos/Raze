@@ -59,7 +59,22 @@ raze = Raze(backend=CalibratedBackend(AnthropicBackend(), scaler))
 
 Always measure ECE before and after on a held-out set and keep the scaler only if
 it helps. This is post-hoc calibration on top of the reused model — no
-fine-tuning, little data. A fine-tuned Raze model is a later milestone.
+fine-tuning, little data.
+
+### Toward a dedicated Raze model (fine-tune path)
+
+`raze.dataset` exports labeled findings as supervised training data, built with
+the **same** prompt builders inference uses, so training matches run time. Two
+formats: `generic` and `messages` (SFT). Targets are hard ground-truth verdicts;
+probability calibration stays post-hoc (above), not learned from hard labels.
+
+```bash
+python benchmarks/export_dataset.py benchmarks/sample_dataset.json \
+    --format messages --out benchmarks/runs/train.jsonl
+```
+
+A fine-tuned small model trained on enough of this data is the dedicated-model
+milestone; until then Raze reuses a frontier model + the calibrator.
 
 ## Safety scope of Raze
 

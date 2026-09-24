@@ -38,3 +38,4 @@ target-version = "py310"
 # runner is executed directly (python benchmarks/runner.py); it inserts src/ on
 # sys.path before importing the package, so imports are intentionally late.
 "benchmarks/runner.py" = ["E402", "I001"]
+"benchmarks/export_dataset.py" = ["E402", "I001"]

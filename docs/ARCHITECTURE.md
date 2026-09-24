@@ -61,6 +61,8 @@ Honest labeling per the review guidance — do not confuse design with measured 
 | Raze model backend (real inference) | **implemented** — `LLMBackend` (provider-agnostic) + `AnthropicBackend`; needs credentials to run |
 | Calibration measurement (ECE) — the function | **implemented** — `raze.calibration.expected_calibration_error` |
 | Probability calibrator (temperature scaling) | **implemented** — `raze.calibrator` (`fit_temperature`, `CalibratedBackend`) |
+| Training-dataset export (fine-tune path) | **implemented** — `raze.dataset` (generic + messages JSONL) |
+| Dedicated fine-tuned Raze model | **proposed** — export exists; no model trained |
 | Calibration *results* on a fixed test set | **proposed** — no measured runs committed |
 | Topic analyzers (all 11 topics) | **implemented** — deterministic detectors emit evidence signals; `PROPOSED_TOPICS == []` |
 | Analyzer depth (more detectors per topic) | **partial** — web has 4; most topics have 1–2 |
