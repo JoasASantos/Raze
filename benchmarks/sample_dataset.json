@@ -1,0 +1,50 @@
+[
+  {
+    "finding": {
+      "target": "app.example.com",
+      "topic": "web",
+      "title": "Unescaped reflection in search",
+      "has_reproduction": true,
+      "state": {
+        "param_value": "<svg onload=1>",
+        "response_body": "<html>q=<svg onload=1></html>",
+        "response_headers": {"Server": "nginx"}
+      }
+    },
+    "exploitable_truth": true
+  },
+  {
+    "finding": {
+      "target": "app.example.com",
+      "topic": "web",
+      "title": "Reflection but properly encoded",
+      "has_reproduction": false,
+      "state": {
+        "param_value": "<b>",
+        "response_body": "<html>q=&lt;b&gt;</html>",
+        "response_headers": {"Content-Security-Policy": "default-src 'self'"}
+      }
+    },
+    "exploitable_truth": false
+  },
+  {
+    "finding": {
+      "target": "db.example.com",
+      "topic": "network",
+      "title": "Exposed Redis",
+      "has_reproduction": true,
+      "state": {"open_ports": [6379]}
+    },
+    "exploitable_truth": true
+  },
+  {
+    "finding": {
+      "target": "corp.example.com",
+      "topic": "crypto",
+      "title": "JWT accepts alg=none",
+      "has_reproduction": true,
+      "state": {"jwt_alg": "none"}
+    },
+    "exploitable_truth": true
+  }
+]
