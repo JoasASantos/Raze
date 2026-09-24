@@ -34,7 +34,13 @@ Raze reports a probability per judgment. Aggregate calibration is measured with 
 
 ## Backends
 
-`src/raze/model.py` defines the `Backend` protocol. The scaffold ships `EchoBackend` (deterministic, offline, for wiring/tests). Real backends (TypeSafe System One SDK, a hosted Jev-family endpoint, or a local model) implement the same protocol.
+`src/raze/model.py` defines the `Backend` protocol (`judge(schema, context) -> Judgment`).
+
+- `EchoBackend` (`model.py`) — deterministic, offline; conservative defaults, fixed low probability. For wiring and tests.
+- `LLMBackend` (`backends/llm.py`) — provider-agnostic. Inject `complete_fn(system, user) -> str`; it builds the System One prompt (schema-injected, evidence marked untrusted), extracts the JSON object, and validates it into the typed judgment. A TypeSafe System One SDK call, a hosted Jev-family endpoint, or a local model each plug in as a `complete_fn`.
+- `AnthropicBackend` (`backends/anthropic_backend.py`) — `LLMBackend` wired to the Anthropic SDK (Claude). Default `claude-opus-5`; pass a cheaper model for bulk judging.
+
+Calibration is measured with `raze.calibration.expected_calibration_error` on a labeled test set.
 
 ## Safety scope of Raze
 

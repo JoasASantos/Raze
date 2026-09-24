@@ -43,10 +43,35 @@ Early scaffold. Contributions marked honestly as **implemented / measured / prop
 
 ## Quickstart
 
+Offline (deterministic stub backend, no credentials):
+
 ```bash
 pip install -e .
 python examples/triage_finding.py
 ```
+
+With a real model backend (Claude):
+
+```bash
+pip install -e ".[anthropic]"    # + set ANTHROPIC_API_KEY or `ant auth login`
+```
+
+```python
+from raze import Raze
+from raze.backends import AnthropicBackend
+from raze.judgments import Exploitability, JudgmentContext
+
+raze = Raze(backend=AnthropicBackend(model="claude-opus-5"))
+j = raze.judge(Exploitability, JudgmentContext(
+    task="Is this reflected input exploitable as XSS?",
+    topic="web",
+    evidence=["GET /search?q=<svg onload=1> reflected unescaped, no CSP"],
+))
+print(j.verdict, j.probability, j.rationale)
+```
+
+Any other provider (a TypeSafe System One SDK call, a local model) plugs in via
+`LLMBackend(complete_fn)`. See [`docs/RAZE_MODEL_SPEC.md`](docs/RAZE_MODEL_SPEC.md).
 
 ## License
 

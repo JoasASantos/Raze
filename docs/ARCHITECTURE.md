@@ -32,6 +32,9 @@ A callable that maps `(context, state)` to a **typed judgment**: a Pydantic mode
 
 - `judgments.py` — the typed judgment primitives.
 - `model.py` — the `Raze` client (backend-agnostic; a stub `EchoBackend` ships so the scaffold runs offline).
+- `backends/llm.py` — `LLMBackend`: provider-agnostic; you inject a `complete_fn` and it builds the System One prompt, extracts JSON, and validates it into the typed judgment.
+- `backends/anthropic_backend.py` — `AnthropicBackend`: `LLMBackend` wired to the Anthropic SDK (Claude). Default model `claude-opus-5`.
+- `calibration.py` — Expected Calibration Error over a labeled test set (aggregate only).
 - `topics.py` — the offensive-security topic taxonomy.
 
 ### OffSec One — the harness (`src/offsec_one/`)
@@ -55,8 +58,9 @@ Honest labeling per the review guidance — do not confuse design with measured 
 | Typed judgment primitives (Raze schemas) | **implemented** (scaffold) |
 | Deterministic validator gate | **implemented** (scaffold, minimal checks) |
 | Authorization/scope boundary | **implemented** (scaffold) |
-| Raze model backend (real inference) | **proposed** — stub backend only |
-| Calibration measurement (ECE) on a fixed test set | **proposed** — harness present, no measured runs |
+| Raze model backend (real inference) | **implemented** — `LLMBackend` (provider-agnostic) + `AnthropicBackend`; needs credentials to run |
+| Calibration measurement (ECE) — the function | **implemented** — `raze.calibration.expected_calibration_error` |
+| Calibration *results* on a fixed test set | **proposed** — no measured runs committed |
 | Multi-topic tool integrations | **proposed** — interfaces defined, tools not wired |
 | Comparative benchmark vs. Jev / Laya | **proposed** — see `benchmarks/README.md` for the required paired methodology |
 
