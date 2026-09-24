@@ -61,7 +61,9 @@ Honest labeling per the review guidance — do not confuse design with measured 
 | Raze model backend (real inference) | **implemented** — `LLMBackend` (provider-agnostic) + `AnthropicBackend`; needs credentials to run |
 | Calibration measurement (ECE) — the function | **implemented** — `raze.calibration.expected_calibration_error` |
 | Calibration *results* on a fixed test set | **proposed** — no measured runs committed |
-| Multi-topic tool integrations | **proposed** — interfaces defined, tools not wired |
+| Topic analyzers (web, recon, network, cloud, crypto) | **implemented** — deterministic detectors emit evidence signals |
+| Topic analyzers (ad, mobile, wireless, exploitdev, reversing, social) | **proposed** — declared in `PROPOSED_TOPICS` |
+| Active tool integrations (traffic-sending recon/scan tools) | **proposed** — analyzers are passive; no traffic-sending tools wired |
 | Comparative benchmark vs. Jev / Laya | **proposed** — see `benchmarks/README.md` for the required paired methodology |
 
 ## Non-goals

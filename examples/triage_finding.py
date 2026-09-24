@@ -21,12 +21,19 @@ def main() -> None:
         target="app.example.com",
         topic="web",
         title="Reflected parameter in search endpoint",
-        evidence=["GET /search?q=<payload> reflected unescaped in response body"],
         has_reproduction=False,  # no PoC yet -> validator will not queue an exploitable verdict
+        state={
+            "param_value": "<svg onload=1>",
+            "response_body": "<html>results for <svg onload=1> ...</html>",
+            "response_headers": {"Server": "nginx"},  # no CSP/HSTS/etc.
+        },
     )
 
     a = agent.assess(finding)
     print(f"target        : {a.finding.target}")
+    print("signals       :")
+    for s in a.signals:
+        print(f"  - {s}")
     print(f"exploitability: {a.exploitability.verdict.value} (p={a.exploitability.probability})")
     print(f"reachable     : {a.reachability.reachable}")
     print(f"novelty       : {a.novelty.novelty.value}")

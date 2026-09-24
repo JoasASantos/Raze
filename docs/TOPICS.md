@@ -17,3 +17,18 @@ Each topic is a module under `src/offsec_one/topics/` exposing tool interfaces a
 | Cryptography | `crypto` | key/secret impact, weak-algorithm exploitability |
 
 Topic modules must call Raze only for **judgments**, and must route all state-changing actions through the harness authorization gate.
+
+## Analyzer status
+
+Deterministic analyzers (in `src/offsec_one/topics/`) turn collected state into `Signal`s that become finding evidence. Registered in `topics/ANALYZERS`.
+
+| Topic | Analyzers | Status |
+|-------|-----------|--------|
+| `web` | `ReflectionAnalyzer`, `SecurityHeaderAnalyzer` | **implemented** |
+| `recon` | `AssetAnalyzer` | **implemented** |
+| `network` | `PortExposureAnalyzer` | **implemented** |
+| `cloud` | `BucketExposureAnalyzer`, `MetadataSSRFAnalyzer` | **implemented** |
+| `crypto` | `WeakAlgorithmAnalyzer`, `SecretEntropyAnalyzer` | **implemented** |
+| `ad`, `mobile`, `wireless`, `exploitdev`, `reversing`, `social` | — | **proposed** (`PROPOSED_TOPICS`) |
+
+Analyzers are passive: they interpret data already collected under an authorized scope and never send traffic to a target.

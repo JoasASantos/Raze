@@ -19,6 +19,7 @@ from raze.judgments import (
 from raze.model import Raze
 
 from offsec_one.authz import Scope
+from offsec_one.topics import Signal, analyze
 from offsec_one.validators import ValidationResult, validate_finding
 
 
@@ -37,6 +38,7 @@ class Finding:
 @dataclass
 class Assessment:
     finding: Finding
+    signals: list[Signal]
     exploitability: Exploitability
     impact: Impact
     reachability: Reachability
@@ -45,20 +47,27 @@ class Assessment:
 
 
 class OffSecOne:
-    def __init__(self, raze: Raze | None = None, scope: Scope | None = None) -> None:
+    def __init__(
+        self, raze: Raze | None = None, scope: Scope | None = None, run_analyzers: bool = True
+    ) -> None:
         self.raze = raze or Raze()
         self.scope = scope
+        self.run_analyzers = run_analyzers
 
     def assess(self, finding: Finding) -> Assessment:
-        # Hard authorization boundary first — before any judgment.
+        # Hard authorization boundary first — before any analyzer or judgment.
         if self.scope is not None:
             self.scope.require(finding.target)
+
+        # Deterministic detectors turn collected state into evidence signals.
+        signals = analyze(finding.topic, finding.state) if self.run_analyzers else []
+        evidence = list(finding.evidence) + [str(s) for s in signals]
 
         ctx = JudgmentContext(
             task=f"Assess finding: {finding.title}",
             topic=finding.topic,
             state=finding.state,
-            evidence=finding.evidence,
+            evidence=evidence,
         )
 
         exploitability = self.raze.judge(Exploitability, ctx)
@@ -76,6 +85,7 @@ class OffSecOne:
 
         return Assessment(
             finding=finding,
+            signals=signals,
             exploitability=exploitability,
             impact=impact,
             reachability=reachability,
