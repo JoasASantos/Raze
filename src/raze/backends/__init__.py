@@ -9,11 +9,11 @@ Any other provider (a TypeSafe System One SDK call, a local model, an OpenAI-sty
 endpoint) plugs in by writing its own `complete_fn` and passing it to `LLMBackend`.
 """
 
-from raze.backends.llm import LLMBackend, JudgmentParseError, build_system_prompt, build_user_prompt
+from raze.backends.llm import JudgmentParseError, LLMBackend, build_system_prompt, build_user_prompt
 
 __all__ = [
-    "LLMBackend",
     "JudgmentParseError",
+    "LLMBackend",
     "build_system_prompt",
     "build_user_prompt",
 ]

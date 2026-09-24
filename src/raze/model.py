@@ -49,7 +49,7 @@ def _placeholder(annotation):
     import enum
 
     if isinstance(annotation, type) and issubclass(annotation, enum.Enum):
-        return list(annotation)[0]  # conservative member (defined first by convention)
+        return next(iter(annotation))  # conservative member (defined first by convention)
     if annotation in (bool,):
         return False
     if annotation in (int,):

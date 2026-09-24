@@ -15,7 +15,8 @@ it as a per-finding precision.
 from __future__ import annotations
 
 import json
-from typing import Callable, TypeVar
+from collections.abc import Callable
+from typing import TypeVar
 
 from pydantic import ValidationError
 

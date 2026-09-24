@@ -19,11 +19,10 @@ import argparse
 import json
 import sys
 
-from raze import Raze, __version__
-
 from offsec_one.agent import Assessment, Finding, OffSecOne
 from offsec_one.authz import Scope, ScopeError
 from offsec_one.topics import ANALYZERS, PROPOSED_TOPICS
+from raze import Raze, __version__
 
 EXIT_OK = 0
 EXIT_USAGE = 1
@@ -131,8 +130,9 @@ def _cmd_topics(_args: argparse.Namespace) -> int:
     for topic, analyzers in ANALYZERS.items():
         names = ", ".join(type(a).__name__ for a in analyzers)
         print(f"  {topic:10s} {names}")
-    print("\nProposed topics (declared, not implemented):")
-    print("  " + ", ".join(PROPOSED_TOPICS))
+    if PROPOSED_TOPICS:
+        print("\nProposed topics (declared, not implemented):")
+        print("  " + ", ".join(PROPOSED_TOPICS))
     return EXIT_OK
 
 

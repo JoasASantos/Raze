@@ -45,4 +45,4 @@ def analyze(topic: str, state: dict) -> list[Signal]:
     return signals
 
 
-__all__ = ["ANALYZERS", "PROPOSED_TOPICS", "Signal", "Analyzer", "analyze"]
+__all__ = ["ANALYZERS", "PROPOSED_TOPICS", "Analyzer", "Signal", "analyze"]

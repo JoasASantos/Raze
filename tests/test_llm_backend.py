@@ -5,7 +5,7 @@ import json
 import pytest
 
 from raze import Raze
-from raze.backends import LLMBackend, JudgmentParseError
+from raze.backends import JudgmentParseError, LLMBackend
 from raze.judgments import Exploitability, ExploitVerdict, JudgmentContext
 
 

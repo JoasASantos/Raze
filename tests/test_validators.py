@@ -1,8 +1,8 @@
 """Tests for the deterministic validator gate — the blocking conditions must hold
 regardless of model probability."""
 
-from raze.judgments import ExploitVerdict, NoveltyClass
 from offsec_one.validators import validate_finding
+from raze.judgments import ExploitVerdict, NoveltyClass
 
 
 def test_exploitable_without_repro_is_blocked():

@@ -9,6 +9,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from offsec_one.authz import Scope
+from offsec_one.topics import Signal, analyze
+from offsec_one.validators import ValidationResult, validate_finding
 from raze.judgments import (
     Exploitability,
     Impact,
@@ -17,10 +20,6 @@ from raze.judgments import (
     Reachability,
 )
 from raze.model import Raze
-
-from offsec_one.authz import Scope
-from offsec_one.topics import Signal, analyze
-from offsec_one.validators import ValidationResult, validate_finding
 
 
 @dataclass
