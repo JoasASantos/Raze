@@ -118,6 +118,32 @@ CLASSES: dict[str, VulnClass] = {c.id: c for c in [
     # ---- social ----
     _c("email_spoofable", "Spoofable Email Domain", "social", ["CWE-290"],
        "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:N"),
+    # ---- more web / API classes ----
+    _c("nosql_injection", "NoSQL Injection", "web", ["CWE-943"], _HIGH_NET, "A03:2021 Injection"),
+    _c("ldap_injection", "LDAP Injection", "web", ["CWE-90"], _HIGH_NET, "A03:2021 Injection"),
+    _c("xpath_injection", "XPath Injection", "web", ["CWE-643"], _MED_NET, "A03:2021 Injection"),
+    _c("crlf_injection", "CRLF / HTTP Response Splitting", "web", ["CWE-93"],
+       "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N"),
+    _c("host_header_injection", "Host Header Injection", "web", ["CWE-644"],
+       "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N"),
+    _c("cors_misconfig", "CORS Misconfiguration", "web", ["CWE-942"],
+       "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:H/I:N/A:N", "A05:2021 Security Misconfiguration"),
+    _c("clickjacking", "Clickjacking", "web", ["CWE-1021"],
+       "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:L/A:N"),
+    _c("prototype_pollution", "Prototype Pollution", "web", ["CWE-1321"], _HIGH_NET,
+       "A08:2021 Software and Data Integrity Failures"),
+    _c("weak_session", "Weak Session / Cookie Handling", "web", ["CWE-384", "CWE-614"],
+       "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:N/A:N", "A07:2021"),
+    _c("web_cache_poisoning", "Web Cache Poisoning", "web", ["CWE-444"], _MED_NET),
+    _c("race_condition", "Race Condition (TOCTOU)", "web", ["CWE-362"],
+       "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:U/C:H/I:H/A:N"),
+    _c("business_logic", "Business Logic Flaw", "web", ["CWE-840"],
+       "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N"),
+    # ---- more network / crypto ----
+    _c("default_credentials", "Default Credentials", "network", ["CWE-1392"], _HIGH_NET),
+    _c("padding_oracle", "Padding Oracle", "crypto", ["CWE-649"],
+       "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:N"),
+    _c("weak_random", "Insecure Randomness", "crypto", ["CWE-338"], _MED_NET),
 ]}
 
 

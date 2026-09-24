@@ -19,6 +19,9 @@ SIGNAL_CLASS: dict[str, str] = {
     "unescaped-reflection": "xss_reflected",
     "reflection": "xss_reflected",
     "open-redirect": "open_redirect",
+    "cors-misconfig": "cors_misconfig",
+    "clickjacking": "clickjacking",
+    "insecure-cookie": "weak_session",
     "missing-header": "security_misconfig",
     # network
     "risky-port": "unauth_service",

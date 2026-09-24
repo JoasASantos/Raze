@@ -18,6 +18,9 @@ from raze.topics.reversing import BinaryTriageAnalyzer
 from raze.topics.social import EmailSpoofabilityAnalyzer
 from raze.topics.taxonomy import ALL_TOPICS, Topic
 from raze.topics.web import (
+    ClickjackingAnalyzer,
+    CookieSecurityAnalyzer,
+    CorsMisconfigAnalyzer,
     OpenRedirectAnalyzer,
     ReflectionAnalyzer,
     SecurityHeaderAnalyzer,
@@ -30,6 +33,9 @@ ANALYZERS: dict[str, list[Analyzer]] = {
         ReflectionAnalyzer(),
         SQLiErrorAnalyzer(),
         OpenRedirectAnalyzer(),
+        CorsMisconfigAnalyzer(),
+        ClickjackingAnalyzer(),
+        CookieSecurityAnalyzer(),
         SecurityHeaderAnalyzer(),
     ],
     "recon": [AssetAnalyzer()],

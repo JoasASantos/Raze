@@ -112,3 +112,69 @@ class SecurityHeaderAnalyzer:
             if header not in present:
                 out.append(Signal("missing-header", detail, severity=severity))
         return out
+
+
+class CorsMisconfigAnalyzer:
+    """Detect a dangerous CORS policy.
+
+    state: {"cors_acao": str, "cors_credentials": bool, "cors_reflects_origin": bool}
+    """
+
+    topic = "web"
+
+    def analyze(self, state: dict) -> list[Signal]:
+        acao = state.get("cors_acao")
+        if not acao:
+            return []
+        creds = bool(state.get("cors_credentials"))
+        if acao == "*" and creds:
+            return [Signal("cors-misconfig", "ACAO=* with credentials", severity="high")]
+        if state.get("cors_reflects_origin"):
+            sev = "high" if creds else "medium"
+            detail = "origin reflected" + (" with credentials" if creds else "")
+            return [Signal("cors-misconfig", detail, severity=sev)]
+        if acao == "*":
+            return [Signal("cors-misconfig", "ACAO wildcard", severity="medium")]
+        return []
+
+
+class ClickjackingAnalyzer:
+    """Flag pages with no framing protection.
+
+    state: {"response_headers": {name: value}}
+    """
+
+    topic = "web"
+
+    def analyze(self, state: dict) -> list[Signal]:
+        headers = state.get("response_headers")
+        if not isinstance(headers, dict):
+            return []
+        present = {k.lower(): str(v) for k, v in headers.items()}
+        has_xfo = "x-frame-options" in present
+        frame_ancestors = "frame-ancestors" in present.get("content-security-policy", "").lower()
+        if not has_xfo and not frame_ancestors:
+            return [Signal("clickjacking", "no X-Frame-Options and no CSP frame-ancestors", "low")]
+        return []
+
+
+class CookieSecurityAnalyzer:
+    """Flag session cookies missing security attributes.
+
+    state: {"set_cookie": "name=v; Path=/; ..."}
+    """
+
+    topic = "web"
+
+    def analyze(self, state: dict) -> list[Signal]:
+        cookie = state.get("set_cookie")
+        if not cookie:
+            return []
+        low = cookie.lower()
+        missing = [flag for flag in ("httponly", "secure") if flag not in low]
+        if "samesite" not in low:
+            missing.append("samesite")
+        if not missing:
+            return []
+        sev = "medium" if ("httponly" in missing or "secure" in missing) else "low"
+        return [Signal("insecure-cookie", "Set-Cookie missing " + ", ".join(missing), sev)]
