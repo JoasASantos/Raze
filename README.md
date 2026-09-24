@@ -102,6 +102,12 @@ refused, `3` assessment failed.
 primitive — plug it into Claude, OpenAI/Codex, Gemini, a local model, or any harness
 via `LLMBackend(complete_fn)`. See [`docs/HARNESSES.md`](docs/HARNESSES.md).
 
+### As a skill
+
+Raze ships an agent **skill** (same idea as the TypeSafe System One skill): it
+teaches an agent when/how to use Raze for offensive-security decisions. Install:
+`cp -r skills/raze ~/.claude/skills/raze`. See [`skills/README.md`](skills/README.md).
+
 ## License
 
 [Apache-2.0](LICENSE). Copyright 2026 Joás Santos and contributors. See [NOTICE](NOTICE).
