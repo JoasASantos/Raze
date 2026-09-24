@@ -7,6 +7,7 @@ requests — the harness collects responses under scope and passes them here.
 from __future__ import annotations
 
 import html
+import re
 
 from raze.topics.base import Signal
 
@@ -45,6 +46,52 @@ class ReflectionAnalyzer:
                 )
             )
         return signals
+
+
+_SQL_ERROR = re.compile(
+    r"(SQL syntax|mysql_fetch|ORA-\d{5}|PostgreSQL.*ERROR|psql:|SQLite3::|"
+    r"Unclosed quotation mark|Microsoft OLE DB Provider for SQL Server|"
+    r"You have an error in your SQL syntax)",
+    re.IGNORECASE,
+)
+
+
+class SQLiErrorAnalyzer:
+    """Detect SQL error messages leaking into a response body (error-based SQLi).
+
+    state: {"response_body": str}
+    """
+
+    topic = "web"
+
+    def analyze(self, state: dict) -> list[Signal]:
+        body = state.get("response_body")
+        if not body:
+            return []
+        m = _SQL_ERROR.search(body)
+        if m:
+            return [Signal("sql-error", f"SQL error string in response: {m.group(0)!r}", severity="high")]
+        return []
+
+
+class OpenRedirectAnalyzer:
+    """Detect a redirect whose Location is driven by user input (open redirect).
+
+    state: {"location_header": str, "param_value": str}
+    """
+
+    topic = "web"
+
+    def analyze(self, state: dict) -> list[Signal]:
+        loc = state.get("location_header")
+        pv = state.get("param_value")
+        if not loc or not pv or pv not in loc:
+            return []
+        if loc.lower().startswith(("http://", "https://", "//")):
+            return [
+                Signal("open-redirect", f"Location reflects input to external target: {loc!r}", severity="medium")
+            ]
+        return []
 
 
 class SecurityHeaderAnalyzer:

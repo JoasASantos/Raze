@@ -17,11 +17,21 @@ from raze.topics.recon import AssetAnalyzer
 from raze.topics.reversing import BinaryTriageAnalyzer
 from raze.topics.social import EmailSpoofabilityAnalyzer
 from raze.topics.taxonomy import ALL_TOPICS, Topic
-from raze.topics.web import ReflectionAnalyzer, SecurityHeaderAnalyzer
+from raze.topics.web import (
+    OpenRedirectAnalyzer,
+    ReflectionAnalyzer,
+    SecurityHeaderAnalyzer,
+    SQLiErrorAnalyzer,
+)
 from raze.topics.wireless import WifiSecurityAnalyzer
 
 ANALYZERS: dict[str, list[Analyzer]] = {
-    "web": [ReflectionAnalyzer(), SecurityHeaderAnalyzer()],
+    "web": [
+        ReflectionAnalyzer(),
+        SQLiErrorAnalyzer(),
+        OpenRedirectAnalyzer(),
+        SecurityHeaderAnalyzer(),
+    ],
     "recon": [AssetAnalyzer()],
     "network": [PortExposureAnalyzer()],
     "cloud": [BucketExposureAnalyzer(), MetadataSSRFAnalyzer()],

@@ -24,7 +24,7 @@ Deterministic analyzers (in `src/raze/topics/`) turn collected state into `Signa
 
 | Topic | Analyzers | Status |
 |-------|-----------|--------|
-| `web` | `ReflectionAnalyzer`, `SecurityHeaderAnalyzer` | **implemented** |
+| `web` | `ReflectionAnalyzer`, `SQLiErrorAnalyzer`, `OpenRedirectAnalyzer`, `SecurityHeaderAnalyzer` | **implemented** |
 | `recon` | `AssetAnalyzer` | **implemented** |
 | `network` | `PortExposureAnalyzer` | **implemented** |
 | `cloud` | `BucketExposureAnalyzer`, `MetadataSSRFAnalyzer` | **implemented** |
@@ -36,6 +36,9 @@ Deterministic analyzers (in `src/raze/topics/`) turn collected state into `Signa
 | `reversing` | `BinaryTriageAnalyzer` | **implemented** |
 | `social` | `EmailSpoofabilityAnalyzer` (authorized assessments only) | **implemented** |
 
-Every taxonomy topic now has at least one analyzer (`PROPOSED_TOPICS == []`). Analyzers stay passive — depth (more detectors per topic, active traffic-sending tools) is the next layer.
+Every taxonomy topic now has at least one analyzer (`PROPOSED_TOPICS == []`). Analyzers stay passive. **Active tools** (in `src/raze/tools/`) do send traffic and
+enforce the authorization boundary before doing so: `HeaderFetchTool` GETs an
+authorized URL and returns headers as analyzer-ready state. More active tools per
+topic are the next layer.
 
 Analyzers are passive: they interpret data already collected under an authorized scope and never send traffic to a target.

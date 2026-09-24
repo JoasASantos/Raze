@@ -62,8 +62,8 @@ Honest labeling per the review guidance — do not confuse design with measured 
 | Calibration measurement (ECE) — the function | **implemented** — `raze.calibration.expected_calibration_error` |
 | Calibration *results* on a fixed test set | **proposed** — no measured runs committed |
 | Topic analyzers (all 11 topics) | **implemented** — deterministic detectors emit evidence signals; `PROPOSED_TOPICS == []` |
-| Analyzer depth (more detectors per topic) | **partial** — one or two detectors per topic today |
-| Active tool integrations (traffic-sending recon/scan tools) | **proposed** — analyzers are passive; no traffic-sending tools wired |
+| Analyzer depth (more detectors per topic) | **partial** — web has 4; most topics have 1–2 |
+| Active tool integrations (traffic-sending tools) | **partial** — `HeaderFetchTool` (scope-gated); framework in `raze.tools` |
 | Comparative benchmark vs. Jev / Laya | **proposed** — see `benchmarks/README.md` for the required paired methodology |
 
 ## Non-goals
