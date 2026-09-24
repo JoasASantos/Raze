@@ -42,6 +42,25 @@ Raze reports a probability per judgment. Aggregate calibration is measured with 
 
 Calibration is measured with `raze.calibration.expected_calibration_error` on a labeled test set.
 
+### Calibrating a reused model
+
+A reused frontier model gives well-typed judgments but poorly-calibrated
+probabilities. Raze's first "own" component fixes this cheaply: **temperature
+scaling** (`raze.calibrator`). Fit a single scalar `T` on labeled
+`(probability, correct)` pairs and rescale every probability through the logit:
+
+```python
+from raze import fit_temperature, CalibratedBackend, Raze
+from raze.backends import AnthropicBackend
+
+scaler = fit_temperature(pairs)                     # pairs from a held-out labeled set
+raze = Raze(backend=CalibratedBackend(AnthropicBackend(), scaler))
+```
+
+Always measure ECE before and after on a held-out set and keep the scaler only if
+it helps. This is post-hoc calibration on top of the reused model — no
+fine-tuning, little data. A fine-tuned Raze model is a later milestone.
+
 ## Safety scope of Raze
 
 Raze inputs are influenced by the target (page content, banners, responses). Therefore:

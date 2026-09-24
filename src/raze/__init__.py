@@ -11,6 +11,7 @@ from raze.agent import Assessment, Finding, RazeAgent
 from raze.authz import Scope, ScopeError
 from raze.backends import LLMBackend
 from raze.calibration import CalibrationReport, expected_calibration_error
+from raze.calibrator import CalibratedBackend, TemperatureScaler, fit_temperature
 from raze.judgments import (
     Exploitability,
     Impact,
@@ -28,6 +29,7 @@ __all__ = [
     "ALL_TOPICS",
     "Assessment",
     "Backend",
+    "CalibratedBackend",
     "CalibrationReport",
     "EchoBackend",
     "Exploitability",
@@ -44,9 +46,11 @@ __all__ = [
     "Scope",
     "ScopeError",
     "Signal",
+    "TemperatureScaler",
     "Topic",
     "ValidationResult",
     "analyze",
     "expected_calibration_error",
+    "fit_temperature",
     "validate_finding",
 ]
