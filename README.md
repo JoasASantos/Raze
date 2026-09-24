@@ -97,6 +97,11 @@ raze topics
 Reads a finding JSON (or `-` for stdin). Exit codes: `0` ok, `1` usage, `2` scope
 refused, `3` assessment failed.
 
+**Providers / harnesses.** Every command takes `--backend echo|anthropic|openai|gemini`
+(with `--model` and, for OpenAI-compatible endpoints, `--base-url`). The model is a
+primitive — plug it into Claude, OpenAI/Codex, Gemini, a local model, or any harness
+via `LLMBackend(complete_fn)`. See [`docs/HARNESSES.md`](docs/HARNESSES.md).
+
 ## License
 
 [Apache-2.0](LICENSE). Copyright 2026 Joás Santos and contributors. See [NOTICE](NOTICE).

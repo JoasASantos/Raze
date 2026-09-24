@@ -22,6 +22,7 @@ import sys
 from raze import Raze, __version__
 from raze.agent import Assessment, Finding, RazeAgent
 from raze.authz import Scope, ScopeError
+from raze.backends import PROVIDERS, make_backend
 from raze.engagement import run_engagement
 from raze.swarm import build_strategies, run_swarm
 from raze.topics import ANALYZERS, PROPOSED_TOPICS
@@ -39,14 +40,13 @@ def _load_json(path: str) -> dict:
         return json.load(f)
 
 
-def _build_backend(name: str, model: str | None):
-    if name == "echo":
-        return None  # Raze() defaults to EchoBackend
-    if name == "anthropic":
-        from raze.backends import AnthropicBackend
-
-        return AnthropicBackend(model=model) if model else AnthropicBackend()
-    raise ValueError(f"Unknown backend {name!r}")
+def _build_backend(name: str, model: str | None = None, base_url: str | None = None):
+    kwargs = {}
+    if model:
+        kwargs["model"] = model
+    if base_url and name == "openai":
+        kwargs["base_url"] = base_url
+    return make_backend(name, **kwargs)  # echo -> None (Raze uses EchoBackend)
 
 
 def _assessment_to_dict(a: Assessment) -> dict:
@@ -104,7 +104,7 @@ def _cmd_assess(args: argparse.Namespace) -> int:
         return EXIT_USAGE
 
     try:
-        backend = _build_backend(args.backend, args.model)
+        backend = _build_backend(args.backend, args.model, getattr(args, "base_url", None))
     except Exception as e:  # noqa: BLE001 - surface backend construction issues cleanly
         print(f"error: backend: {e}", file=sys.stderr)
         return EXIT_USAGE
@@ -144,7 +144,7 @@ def _cmd_decide(args: argparse.Namespace) -> int:
 
     try:
         finding = Finding(**finding_data)
-        backend = _build_backend(args.backend, args.model)
+        backend = _build_backend(args.backend, args.model, getattr(args, "base_url", None))
     except Exception as e:  # noqa: BLE001 - surface finding/backend errors cleanly
         print(f"error: {e}", file=sys.stderr)
         return EXIT_USAGE
@@ -192,7 +192,7 @@ def _cmd_plan(args: argparse.Namespace) -> int:
     try:
         # Accept either bare finding objects or dataset rows ({"finding": {...}}).
         findings = [Finding(**(entry.get("finding", entry))) for entry in raw]
-        backend = _build_backend(args.backend, args.model)
+        backend = _build_backend(args.backend, args.model, getattr(args, "base_url", None))
     except Exception as e:  # noqa: BLE001
         print(f"error: {e}", file=sys.stderr)
         return EXIT_USAGE
@@ -244,7 +244,7 @@ def _cmd_swarm(args: argparse.Namespace) -> int:
 
     try:
         findings = [Finding(**(entry.get("finding", entry))) for entry in raw]
-        backend = _build_backend(args.backend, args.model)
+        backend = _build_backend(args.backend, args.model, getattr(args, "base_url", None))
     except Exception as e:  # noqa: BLE001
         print(f"error: {e}", file=sys.stderr)
         return EXIT_USAGE
@@ -293,43 +293,37 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--version", action="version", version=f"Raze {__version__}")
     sub = parser.add_subparsers(dest="command")
 
+    def _backend_args(sp: argparse.ArgumentParser) -> None:
+        sp.add_argument("--scope", help="Path to scope JSON (enforces authorization boundary).")
+        sp.add_argument("--backend", choices=list(PROVIDERS), default="echo",
+                        help="Model provider/harness (echo|anthropic|openai|gemini).")
+        sp.add_argument("--model", help="Model id (provider default otherwise).")
+        sp.add_argument("--base-url", dest="base_url",
+                        help="OpenAI-compatible base URL (openai backend: Codex/Azure/local/etc).")
+        sp.add_argument("--no-analyzers", action="store_true", help="Skip deterministic analyzers.")
+        sp.add_argument("--json", action="store_true", help="Emit JSON.")
+
     a = sub.add_parser("assess", help="Assess a finding (JSON file or '-' for stdin).")
     a.add_argument("finding", help="Path to finding JSON, or '-' for stdin.")
-    a.add_argument("--scope", help="Path to scope JSON (enforces authorization boundary).")
-    a.add_argument("--backend", choices=["echo", "anthropic"], default="echo")
-    a.add_argument("--model", help="Model id for the anthropic backend (default claude-opus-5).")
-    a.add_argument("--no-analyzers", action="store_true", help="Skip deterministic analyzers.")
-    a.add_argument("--json", action="store_true", help="Emit JSON instead of human-readable text.")
+    _backend_args(a)
     a.set_defaults(func=_cmd_assess)
 
     d = sub.add_parser("decide", help="Fast chained decision (one combined model call).")
     d.add_argument("finding", help="Path to finding JSON, or '-' for stdin.")
-    d.add_argument("--scope", help="Path to scope JSON (enforces authorization boundary).")
-    d.add_argument("--backend", choices=["echo", "anthropic"], default="echo")
-    d.add_argument("--model", help="Model id for the anthropic backend (default claude-opus-5).")
-    d.add_argument("--no-analyzers", action="store_true", help="Skip deterministic analyzers.")
-    d.add_argument("--json", action="store_true", help="Emit JSON instead of human-readable text.")
+    _backend_args(d)
     d.set_defaults(func=_cmd_decide)
 
     p = sub.add_parser("plan", help="Decide a whole engagement (JSON array) and rank a plan.")
     p.add_argument("findings", help="Path to a JSON array of findings (or dataset rows), '-' stdin.")
-    p.add_argument("--scope", help="Path to scope JSON (enforces authorization boundary).")
-    p.add_argument("--backend", choices=["echo", "anthropic"], default="echo")
-    p.add_argument("--model", help="Model id for the anthropic backend (default claude-opus-5).")
-    p.add_argument("--no-analyzers", action="store_true", help="Skip deterministic analyzers.")
+    _backend_args(p)
     p.add_argument("--top", type=int, default=10, help="How many ranked decisions to print.")
-    p.add_argument("--json", action="store_true", help="Emit JSON instead of human-readable text.")
     p.set_defaults(func=_cmd_plan)
 
     sw = sub.add_parser("swarm", help="Generate strategies per finding and run the adaptive loop.")
     sw.add_argument("findings", help="Path to a JSON array of findings (or dataset rows), '-' stdin.")
-    sw.add_argument("--scope", help="Path to scope JSON (enforces authorization boundary).")
-    sw.add_argument("--backend", choices=["echo", "anthropic"], default="echo")
-    sw.add_argument("--model", help="Model id for the anthropic backend.")
-    sw.add_argument("--no-analyzers", action="store_true")
+    _backend_args(sw)
     sw.add_argument("--steps", type=int, help="Max adaptive steps (default: all).")
     sw.add_argument("--top", type=int, default=10, help="How many initial strategies to print.")
-    sw.add_argument("--json", action="store_true")
     sw.set_defaults(func=_cmd_swarm)
 
     t = sub.add_parser("topics", help="List implemented and proposed topics.")
