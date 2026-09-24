@@ -78,6 +78,9 @@ Any other provider (a TypeSafe System One SDK call, a local model) plugs in via
 ### CLI
 
 ```bash
+# Fast decision: one combined model call, chained multi-factor verdict + priority:
+raze decide examples/finding.json --scope examples/scope.json
+
 # Assess a finding, enforcing an authorization scope (offline echo backend):
 raze assess examples/finding.json --scope examples/scope.json --json
 

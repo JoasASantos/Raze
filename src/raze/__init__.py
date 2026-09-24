@@ -12,7 +12,9 @@ from raze.authz import Scope, ScopeError
 from raze.backends import LLMBackend
 from raze.calibration import CalibrationReport, expected_calibration_error
 from raze.calibrator import CalibratedBackend, TemperatureScaler, fit_temperature
+from raze.decide import Decision, build_decision
 from raze.judgments import (
+    CombinedJudgment,
     Exploitability,
     Impact,
     Judgment,
@@ -31,6 +33,8 @@ __all__ = [
     "Backend",
     "CalibratedBackend",
     "CalibrationReport",
+    "CombinedJudgment",
+    "Decision",
     "EchoBackend",
     "Exploitability",
     "Finding",
@@ -50,6 +54,7 @@ __all__ = [
     "Topic",
     "ValidationResult",
     "analyze",
+    "build_decision",
     "expected_calibration_error",
     "fit_temperature",
     "validate_finding",

@@ -92,3 +92,22 @@ class NextAction(Judgment):
     @property
     def best(self) -> ActionCandidate | None:
         return max(self.candidates, key=lambda c: c.score, default=None)
+
+
+class CombinedJudgment(Judgment):
+    """All judgments in ONE model call — the fast path.
+
+    A single request yields exploitability, impact, reachability, novelty, and
+    ranked next actions, instead of four separate calls. Lower latency and cost,
+    which is what makes chained decisions fast.
+    """
+
+    verdict: ExploitVerdict
+    reachable: bool
+    novelty: NoveltyClass
+    severity: Severity = Severity.info
+    confidentiality: bool = False
+    integrity: bool = False
+    availability: bool = False
+    preconditions: list[str] = Field(default_factory=list)
+    next_actions: list[ActionCandidate] = Field(default_factory=list)

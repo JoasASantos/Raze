@@ -125,6 +125,49 @@ def _cmd_assess(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
+def _cmd_decide(args: argparse.Namespace) -> int:
+    try:
+        finding_data = _load_json(args.finding)
+    except (OSError, json.JSONDecodeError) as e:
+        print(f"error: cannot read finding: {e}", file=sys.stderr)
+        return EXIT_USAGE
+
+    scope = None
+    if args.scope:
+        try:
+            scope = Scope(**_load_json(args.scope))
+        except (OSError, json.JSONDecodeError, TypeError) as e:
+            print(f"error: cannot read scope: {e}", file=sys.stderr)
+            return EXIT_USAGE
+
+    try:
+        finding = Finding(**finding_data)
+        backend = _build_backend(args.backend, args.model)
+    except Exception as e:  # noqa: BLE001 - surface finding/backend errors cleanly
+        print(f"error: {e}", file=sys.stderr)
+        return EXIT_USAGE
+
+    agent = RazeAgent(raze=Raze(backend=backend), scope=scope, run_analyzers=not args.no_analyzers)
+    try:
+        decision = agent.decide(finding)
+    except ScopeError as e:
+        print(f"scope refused: {e}", file=sys.stderr)
+        return EXIT_SCOPE
+    except Exception as e:  # noqa: BLE001
+        print(f"decision failed: {e}", file=sys.stderr)
+        return EXIT_JUDGMENT
+
+    if args.json:
+        print(json.dumps(decision.to_dict(), indent=2))
+    else:
+        print(f"[{decision.action.upper()}] {decision.finding_title}  "
+              f"priority={decision.priority:.1f} confidence={decision.confidence}")
+        print(f"  {decision.rationale}")
+        if decision.latency_ms is not None:
+            print(f"  latency={decision.latency_ms:.1f}ms (single combined call)")
+    return EXIT_OK
+
+
 def _cmd_topics(_args: argparse.Namespace) -> int:
     print("Implemented topics:")
     for topic, analyzers in ANALYZERS.items():
@@ -152,6 +195,15 @@ def main(argv: list[str] | None = None) -> int:
     a.add_argument("--no-analyzers", action="store_true", help="Skip deterministic analyzers.")
     a.add_argument("--json", action="store_true", help="Emit JSON instead of human-readable text.")
     a.set_defaults(func=_cmd_assess)
+
+    d = sub.add_parser("decide", help="Fast chained decision (one combined model call).")
+    d.add_argument("finding", help="Path to finding JSON, or '-' for stdin.")
+    d.add_argument("--scope", help="Path to scope JSON (enforces authorization boundary).")
+    d.add_argument("--backend", choices=["echo", "anthropic"], default="echo")
+    d.add_argument("--model", help="Model id for the anthropic backend (default claude-opus-5).")
+    d.add_argument("--no-analyzers", action="store_true", help="Skip deterministic analyzers.")
+    d.add_argument("--json", action="store_true", help="Emit JSON instead of human-readable text.")
+    d.set_defaults(func=_cmd_decide)
 
     t = sub.add_parser("topics", help="List implemented and proposed topics.")
     t.set_defaults(func=_cmd_topics)

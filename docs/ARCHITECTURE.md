@@ -40,7 +40,8 @@ A callable that maps `(context, state)` to a **typed judgment**: a Pydantic mode
 ### RazeAgent — the harness (`src/raze/agent.py`)
 Orchestrates topic analyzers, calls the `Raze` model for decisions, runs validators, and enforces authorization.
 
-- `agent.py` — the orchestration loop (propose → validate → queue).
+- `agent.py` — orchestration: `assess()` (granular, per-judgment) and `decide()` (fast path: one combined model call).
+- `decide.py` — the decision engine: chained, short-circuiting, multi-factor priority scoring → one ranked `Decision`.
 - `validators.py` — deterministic checks that can downgrade or drop a finding.
 - `authz.py` — scope/authorization gate.
 - `cli.py` — entrypoint.
@@ -56,6 +57,7 @@ Honest labeling per the review guidance — do not confuse design with measured 
 | Contribution | Status |
 |--------------|--------|
 | Typed judgment primitives (Raze schemas) | **implemented** (scaffold) |
+| Fast decision engine (combined 1-call judgment, chained, multi-factor priority) | **implemented** — `raze.decide` + `RazeAgent.decide` |
 | Deterministic validator gate | **implemented** (scaffold, minimal checks) |
 | Authorization/scope boundary | **implemented** (scaffold) |
 | Raze model backend (real inference) | **implemented** — `LLMBackend` (provider-agnostic) + `AnthropicBackend`; needs credentials to run |

@@ -7,10 +7,13 @@ It proposes a disposition; the human operator disposes.
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass, field
 
 from raze.authz import Scope
+from raze.decide import Decision, build_decision
 from raze.judgments import (
+    CombinedJudgment,
     Exploitability,
     Impact,
     JudgmentContext,
@@ -90,4 +93,42 @@ class RazeAgent:
             reachability=reachability,
             novelty=novelty,
             result=result,
+        )
+
+    def decide(self, finding: Finding) -> Decision:
+        """Fast path: one combined model call, chained multi-factor decision.
+
+        Produces a single ranked, actionable Decision instead of four separate
+        judgments — lower latency, decisive output.
+        """
+        if self.scope is not None:
+            self.scope.require(finding.target)
+
+        signals = analyze(finding.topic, finding.state) if self.run_analyzers else []
+        evidence = list(finding.evidence) + [str(s) for s in signals]
+        ctx = JudgmentContext(
+            task=f"Decide on finding: {finding.title}",
+            topic=finding.topic,
+            state=finding.state,
+            evidence=evidence,
+        )
+
+        started = time.perf_counter()
+        judgment = self.raze.judge(CombinedJudgment, ctx)  # single call
+        latency_ms = (time.perf_counter() - started) * 1000.0
+
+        result = validate_finding(
+            verdict=judgment.verdict,
+            probability=judgment.probability,
+            reachable=judgment.reachable,
+            novelty=judgment.novelty,
+            has_reproduction=finding.has_reproduction,
+        )
+        return build_decision(
+            finding_title=finding.title,
+            judgment=judgment,
+            signals=signals,
+            validation=result,
+            has_reproduction=finding.has_reproduction,
+            latency_ms=latency_ms,
         )
