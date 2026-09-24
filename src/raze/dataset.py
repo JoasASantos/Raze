@@ -21,6 +21,7 @@ from dataclasses import dataclass
 
 from raze.backends.llm import build_system_prompt, build_user_prompt
 from raze.bench import BenchCase
+from raze.cvss import severity_rating
 from raze.judgments import Exploitability, ExploitVerdict, JudgmentContext
 from raze.topics import analyze
 
@@ -47,18 +48,34 @@ def build_examples(cases: list[BenchCase], *, run_analyzers: bool = True) -> lis
         verdict = (
             ExploitVerdict.exploitable if case.exploitable_truth else ExploitVerdict.not_exploitable
         )
+        cm = case.meta or {}
         target = {
             "probability": 1.0,
             "rationale": "",
             "verdict": verdict.value,
             "preconditions": [],
         }
+        # Ground the training target in CWE/CVSS/class when the dataset provides it.
+        if cm.get("cvss_score") is not None:
+            target["severity"] = severity_rating(cm["cvss_score"])
+        if cm.get("cwe"):
+            target["cwe"] = cm["cwe"]
+        if cm.get("vuln_class"):
+            target["vuln_class"] = cm["vuln_class"]
         examples.append(
             TrainingExample(
                 system=build_system_prompt(Exploitability),
                 user=build_user_prompt(ctx),
                 target=target,
-                meta={"target": f.target, "topic": f.topic, "title": f.title},
+                meta={
+                    "target": f.target,
+                    "topic": f.topic,
+                    "title": f.title,
+                    "cwe": cm.get("cwe"),
+                    "vuln_class": cm.get("vuln_class"),
+                    "cvss_vector": cm.get("cvss_vector"),
+                    "difficulty": cm.get("difficulty"),
+                },
             )
         )
     return examples

@@ -21,6 +21,12 @@ from __future__ import annotations
 
 import json
 import os
+import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+
+from raze.classify import infer_class
+from raze.topics import analyze
 
 # (topic, title, state, exploitable_truth, cwe, difficulty, rationale)
 CASES: list[tuple] = [
@@ -183,6 +189,8 @@ def build() -> list[dict]:
     for topic, title, state, truth, cwe, difficulty, rationale in CASES:
         counters[topic] = counters.get(topic, 0) + 1
         target = _target_for(topic, counters[topic])
+        # Ground each case in the taxonomy via the same pipeline Raze uses.
+        vc = infer_class(topic, analyze(topic, state))
         out.append(
             {
                 "finding": {
@@ -194,6 +202,9 @@ def build() -> list[dict]:
                 },
                 "exploitable_truth": truth,
                 "cwe": cwe,
+                "vuln_class": vc.id if vc else None,
+                "cvss_vector": vc.typical_cvss if vc else None,
+                "cvss_score": vc.typical_score if vc else None,
                 "difficulty": difficulty,
                 "label_rationale": rationale,
             }

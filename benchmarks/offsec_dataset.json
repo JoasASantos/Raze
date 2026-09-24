@@ -15,6 +15,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-79",
+    "vuln_class": "xss_reflected",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+    "cvss_score": 6.1,
     "difficulty": "easy",
     "label_rationale": "Dangerous chars reflected unencoded, no CSP to mitigate."
   },
@@ -34,6 +37,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-79",
+    "vuln_class": "security_misconfig",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+    "cvss_score": 6.5,
     "difficulty": "medium",
     "label_rationale": "Input encoded on output; CSP present. Not exploitable."
   },
@@ -50,6 +56,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-79",
+    "vuln_class": "xss_reflected",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+    "cvss_score": 6.1,
     "difficulty": "easy",
     "label_rationale": "Payload persisted and rendered unescaped."
   },
@@ -65,6 +74,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-89",
+    "vuln_class": "sqli",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "easy",
     "label_rationale": "DB error leaks into response on quote injection."
   },
@@ -80,6 +92,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-89",
+    "vuln_class": "xss_reflected",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+    "cvss_score": 6.1,
     "difficulty": "hard",
     "label_rationale": "Contains 'SQL' and 'syntax' but is benign prose, no DB error signature."
   },
@@ -96,6 +111,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-601",
+    "vuln_class": "open_redirect",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:N/A:N",
+    "cvss_score": 4.3,
     "difficulty": "easy",
     "label_rationale": "Location driven by user input to external host."
   },
@@ -112,6 +130,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-601",
+    "vuln_class": "xss_reflected",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+    "cvss_score": 6.1,
     "difficulty": "medium",
     "label_rationale": "Relative internal redirect, not attacker-controlled external."
   },
@@ -129,6 +150,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-693",
+    "vuln_class": "security_misconfig",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+    "cvss_score": 6.5,
     "difficulty": "medium",
     "label_rationale": "Missing CSP/HSTS is hardening debt, not an exploitable finding by itself."
   },
@@ -145,6 +169,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-918",
+    "vuln_class": "xss_reflected",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+    "cvss_score": 6.1,
     "difficulty": "medium",
     "label_rationale": "Server fetched attacker-supplied internal URL and returned its content."
   },
@@ -162,6 +189,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-306",
+    "vuln_class": "unauth_service",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "easy",
     "label_rationale": "Redis with no auth on the network = RCE/data access."
   },
@@ -179,6 +209,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-306",
+    "vuln_class": "unauth_service",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "easy",
     "label_rationale": "MongoDB default no-auth exposure."
   },
@@ -196,6 +229,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-306",
+    "vuln_class": "unauth_service",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "easy",
     "label_rationale": "Unauthenticated Docker API = host RCE."
   },
@@ -214,6 +250,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-200",
+    "vuln_class": "unauth_service",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "medium",
     "label_rationale": "Standard managed services, no exposed datastore."
   },
@@ -231,6 +270,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-319",
+    "vuln_class": "unauth_service",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "medium",
     "label_rationale": "Cleartext admin protocol; credentials sniffable, often default creds."
   },
@@ -249,6 +291,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-319",
+    "vuln_class": "unauth_service",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "hard",
     "label_rationale": "FTP present but exposure depends on anon/creds; not exploitable without more."
   },
@@ -264,6 +309,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-347",
+    "vuln_class": "jwt_flaw",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "easy",
     "label_rationale": "Signature bypass; forge any token."
   },
@@ -281,6 +329,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-327",
+    "vuln_class": "weak_crypto",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+    "cvss_score": 6.5,
     "difficulty": "hard",
     "label_rationale": "Weak hash but used for non-security integrity; not exploitable."
   },
@@ -299,6 +350,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-916",
+    "vuln_class": "weak_crypto",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+    "cvss_score": 6.5,
     "difficulty": "medium",
     "label_rationale": "Fast unsalted hash for passwords = crackable at scale."
   },
@@ -314,6 +368,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-331",
+    "vuln_class": "hardcoded_secret",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "easy",
     "label_rationale": "Guessable key; forge signatures."
   },
@@ -329,6 +386,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-331",
+    "vuln_class": "jwt_flaw",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "medium",
     "label_rationale": "Strong random secret, not guessable."
   },
@@ -346,6 +406,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-327",
+    "vuln_class": "weak_crypto",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+    "cvss_score": 6.5,
     "difficulty": "hard",
     "label_rationale": "Deprecated (Sweet32) but not trivially exploitable in most deployments."
   },
@@ -366,6 +429,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-266",
+    "vuln_class": "unconstrained_delegation",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "medium",
     "label_rationale": "Capture TGTs of connecting privileged users."
   },
@@ -387,6 +453,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-522",
+    "vuln_class": "kerberoasting",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N",
+    "cvss_score": 8.1,
     "difficulty": "medium",
     "label_rationale": "SPN on admin account; offline crack of TGS to DA."
   },
@@ -408,6 +477,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-522",
+    "vuln_class": "kerberoasting",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N",
+    "cvss_score": 8.1,
     "difficulty": "hard",
     "label_rationale": "Roastable but non-privileged and strong pwd; low practical impact."
   },
@@ -429,6 +501,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-522",
+    "vuln_class": "asrep_roasting",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N",
+    "cvss_score": 8.1,
     "difficulty": "medium",
     "label_rationale": "DONT_REQ_PREAUTH on privileged account."
   },
@@ -450,6 +525,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-noinfo",
+    "vuln_class": "kerberoasting",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:N",
+    "cvss_score": 8.1,
     "difficulty": "easy",
     "label_rationale": "No roastable/delegation flags."
   },
@@ -469,6 +547,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-732",
+    "vuln_class": "public_bucket",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+    "cvss_score": 7.5,
     "difficulty": "easy",
     "label_rationale": "World-readable object storage."
   },
@@ -489,6 +570,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-732",
+    "vuln_class": "public_bucket",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+    "cvss_score": 7.5,
     "difficulty": "easy",
     "label_rationale": "No public grant."
   },
@@ -504,6 +588,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-918",
+    "vuln_class": "cloud_metadata_ssrf",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "easy",
     "label_rationale": "Reaches IMDS; steal role credentials."
   },
@@ -519,6 +606,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-918",
+    "vuln_class": "cloud_metadata_ssrf",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "medium",
     "label_rationale": "GCP metadata endpoint reachable."
   },
@@ -534,6 +624,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-918",
+    "vuln_class": "public_bucket",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+    "cvss_score": 7.5,
     "difficulty": "medium",
     "label_rationale": "Legitimate external egress, not a metadata SSRF."
   },
@@ -549,6 +642,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-489",
+    "vuln_class": "mobile_insecure_storage",
+    "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+    "cvss_score": 6.2,
     "difficulty": "medium",
     "label_rationale": "Attacker can attach a debugger to a release app."
   },
@@ -564,6 +660,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-319",
+    "vuln_class": "mobile_insecure_storage",
+    "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+    "cvss_score": 6.2,
     "difficulty": "medium",
     "label_rationale": "App sends data over HTTP; MITM."
   },
@@ -579,6 +678,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-530",
+    "vuln_class": "mobile_insecure_storage",
+    "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+    "cvss_score": 6.2,
     "difficulty": "hard",
     "label_rationale": "Backup extraction needs local/adb access; low remote impact alone."
   },
@@ -599,6 +701,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-926",
+    "vuln_class": "mobile_exported_component",
+    "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+    "cvss_score": 5.1,
     "difficulty": "medium",
     "label_rationale": "Any app can invoke a sensitive exported component."
   },
@@ -619,6 +724,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-926",
+    "vuln_class": "mobile_insecure_storage",
+    "cvss_vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+    "cvss_score": 6.2,
     "difficulty": "hard",
     "label_rationale": "Guarded by signature-level permission."
   },
@@ -634,6 +742,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-319",
+    "vuln_class": "wifi_weak_enc",
+    "cvss_vector": "CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
+    "cvss_score": 8.1,
     "difficulty": "easy",
     "label_rationale": "No encryption; passive capture and injection."
   },
@@ -649,6 +760,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-327",
+    "vuln_class": "wifi_weak_enc",
+    "cvss_vector": "CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
+    "cvss_score": 8.1,
     "difficulty": "easy",
     "label_rationale": "WEP crackable in minutes."
   },
@@ -665,6 +779,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-307",
+    "vuln_class": "wifi_weak_enc",
+    "cvss_vector": "CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
+    "cvss_score": 8.1,
     "difficulty": "medium",
     "label_rationale": "WPS PIN brute force / Pixie-Dust recovers PSK."
   },
@@ -681,6 +798,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-noinfo",
+    "vuln_class": "wifi_weak_enc",
+    "cvss_vector": "CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
+    "cvss_score": 8.1,
     "difficulty": "medium",
     "label_rationale": "Only offline crack of a strong PSK; not practically exploitable."
   },
@@ -696,6 +816,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-noinfo",
+    "vuln_class": "wifi_weak_enc",
+    "cvss_vector": "CVSS:3.1/AV:A/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N",
+    "cvss_score": 8.1,
     "difficulty": "hard",
     "label_rationale": "SAE resists offline crack; check transition mode separately."
   },
@@ -713,6 +836,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-787",
+    "vuln_class": "missing_mitigations",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+    "cvss_score": 6.5,
     "difficulty": "medium",
     "label_rationale": "Missing mitigations plus an actual overflow primitive = exploitable."
   },
@@ -729,6 +855,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-693",
+    "vuln_class": "missing_mitigations",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+    "cvss_score": 6.5,
     "difficulty": "hard",
     "label_rationale": "Weak hardening is not a vulnerability without a primitive."
   },
@@ -747,6 +876,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-noinfo",
+    "vuln_class": "memory_corruption",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "easy",
     "label_rationale": "Hardened binary, nothing to flag."
   },
@@ -763,6 +895,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-693",
+    "vuln_class": "missing_mitigations",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N",
+    "cvss_score": 6.5,
     "difficulty": "hard",
     "label_rationale": "Lowers the bar but not exploitable alone."
   },
@@ -780,6 +915,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-242",
+    "vuln_class": "memory_corruption",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "hard",
     "label_rationale": "Banned function present but no demonstrated reachable overflow."
   },
@@ -800,6 +938,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-78",
+    "vuln_class": "memory_corruption",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "medium",
     "label_rationale": "Command sink with format string suggests injection path."
   },
@@ -817,6 +958,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-321",
+    "vuln_class": "embedded_secret",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "medium",
     "label_rationale": "Embedded private key extractable from the binary."
   },
@@ -835,6 +979,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-noinfo",
+    "vuln_class": "embedded_secret",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+    "cvss_score": 9.8,
     "difficulty": "easy",
     "label_rationale": "No dangerous sinks."
   },
@@ -851,6 +998,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-290",
+    "vuln_class": "email_spoofable",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:N",
+    "cvss_score": 6.5,
     "difficulty": "easy",
     "label_rationale": "Domain trivially spoofable for phishing (authorized assessment)."
   },
@@ -867,6 +1017,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-290",
+    "vuln_class": "email_spoofable",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:N",
+    "cvss_score": 6.5,
     "difficulty": "medium",
     "label_rationale": "Monitoring only; spoofed mail still delivered."
   },
@@ -885,6 +1038,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-290",
+    "vuln_class": "email_spoofable",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:N",
+    "cvss_score": 6.5,
     "difficulty": "medium",
     "label_rationale": "Enforced; spoofing blocked."
   },
@@ -903,6 +1059,9 @@
     },
     "exploitable_truth": true,
     "cwe": "CWE-290",
+    "vuln_class": "email_spoofable",
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:H/A:N",
+    "cvss_score": 6.5,
     "difficulty": "hard",
     "label_rationale": "Even with enforcement, a registered look-alike enables convincing phishing."
   },
@@ -918,6 +1077,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-noinfo",
+    "vuln_class": null,
+    "cvss_vector": null,
+    "cvss_score": null,
     "difficulty": "hard",
     "label_rationale": "Interesting attack surface but discovery alone is not exploitable."
   },
@@ -933,6 +1095,9 @@
     },
     "exploitable_truth": false,
     "cwe": "CWE-noinfo",
+    "vuln_class": null,
+    "cvss_vector": null,
+    "cvss_score": null,
     "difficulty": "easy",
     "label_rationale": "Asset enumeration signal, not a vulnerability."
   }
