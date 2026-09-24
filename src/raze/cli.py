@@ -23,6 +23,7 @@ from raze import Raze, __version__
 from raze.agent import Assessment, Finding, RazeAgent
 from raze.authz import Scope, ScopeError
 from raze.engagement import run_engagement
+from raze.swarm import build_strategies, run_swarm
 from raze.topics import ANALYZERS, PROPOSED_TOPICS
 
 EXIT_OK = 0
@@ -222,6 +223,57 @@ def _cmd_plan(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
+def _cmd_swarm(args: argparse.Namespace) -> int:
+    """Generate candidate strategies per finding and run the adaptive loop."""
+    try:
+        raw = _load_json(args.findings)
+    except (OSError, json.JSONDecodeError) as e:
+        print(f"error: cannot read findings: {e}", file=sys.stderr)
+        return EXIT_USAGE
+    if not isinstance(raw, list):
+        print("error: findings file must be a JSON array", file=sys.stderr)
+        return EXIT_USAGE
+
+    scope = None
+    if args.scope:
+        try:
+            scope = Scope(**_load_json(args.scope))
+        except (OSError, json.JSONDecodeError, TypeError) as e:
+            print(f"error: cannot read scope: {e}", file=sys.stderr)
+            return EXIT_USAGE
+
+    try:
+        findings = [Finding(**(entry.get("finding", entry))) for entry in raw]
+        backend = _build_backend(args.backend, args.model)
+    except Exception as e:  # noqa: BLE001
+        print(f"error: {e}", file=sys.stderr)
+        return EXIT_USAGE
+
+    agent = RazeAgent(raze=Raze(backend=backend), scope=scope, run_analyzers=not args.no_analyzers)
+    try:
+        strategies = build_strategies(findings, agent)
+    except ScopeError as e:
+        print(f"scope refused: {e}", file=sys.stderr)
+        return EXIT_SCOPE
+    report = run_swarm(strategies, steps=args.steps)
+
+    if args.json:
+        print(json.dumps(report.to_dict(), indent=2))
+        return EXIT_OK
+
+    print(f"swarm: {report.n_strategies} candidate strategies, {report.total_ms:.1f}ms")
+    print("initial top strategies:")
+    for s in report.initial_ranking[: args.top]:
+        flag = "" if s["runnable"] else " (blocked: prereq)"
+        print(f"  score={s['score']:5.1f} [{s['vuln_class']}] {s['description']}{flag}")
+    print("adaptive trajectory (attention follows what lands):")
+    for i, step in enumerate(report.trajectory, 1):
+        print(f"  {i:2d}. score={step.score:5.1f} {'OK ' if step.success else 'x  '} {step.strategy_id}")
+    print(f"discovered facts: {sorted(report.discovered)}")
+    print(f"signal by class:  {report.signal}")
+    return EXIT_OK
+
+
 def _cmd_topics(_args: argparse.Namespace) -> int:
     print("Implemented topics:")
     for topic, analyzers in ANALYZERS.items():
@@ -268,6 +320,17 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--top", type=int, default=10, help="How many ranked decisions to print.")
     p.add_argument("--json", action="store_true", help="Emit JSON instead of human-readable text.")
     p.set_defaults(func=_cmd_plan)
+
+    sw = sub.add_parser("swarm", help="Generate strategies per finding and run the adaptive loop.")
+    sw.add_argument("findings", help="Path to a JSON array of findings (or dataset rows), '-' stdin.")
+    sw.add_argument("--scope", help="Path to scope JSON (enforces authorization boundary).")
+    sw.add_argument("--backend", choices=["echo", "anthropic"], default="echo")
+    sw.add_argument("--model", help="Model id for the anthropic backend.")
+    sw.add_argument("--no-analyzers", action="store_true")
+    sw.add_argument("--steps", type=int, help="Max adaptive steps (default: all).")
+    sw.add_argument("--top", type=int, default=10, help="How many initial strategies to print.")
+    sw.add_argument("--json", action="store_true")
+    sw.set_defaults(func=_cmd_swarm)
 
     t = sub.add_parser("topics", help="List implemented and proposed topics.")
     t.set_defaults(func=_cmd_topics)

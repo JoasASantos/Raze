@@ -42,6 +42,8 @@ from raze.killchain import (
     human_gated_kinds,
 )
 from raze.model import Backend, EchoBackend, Raze
+from raze.strategies import generate as generate_strategies
+from raze.swarm import SwarmReport, build_strategies, run_swarm
 from raze.topics import ALL_TOPICS, Signal, Topic, analyze
 from raze.validators import ValidationResult, validate_finding
 
@@ -81,15 +83,19 @@ __all__ = [
     "ScoredStrategy",
     "Signal",
     "Strategy",
+    "SwarmReport",
     "TechniqueSelection",
     "TemperatureScaler",
     "Topic",
     "ValidationResult",
     "analyze",
     "build_decision",
+    "build_strategies",
     "expected_calibration_error",
     "fit_temperature",
+    "generate_strategies",
     "human_gated_kinds",
     "run_engagement",
+    "run_swarm",
     "validate_finding",
 ]

@@ -47,6 +47,20 @@ eng.report_result(best.strategy, True)    # it lands -> sqli signal accumulates
 
 `rank()` orders runnable strategies first, then by score.
 
+## Driving it end to end
+
+`raze.strategies.generate` produces candidate strategies per vulnerability class
+(with prerequisites/yields), and `raze.swarm` decides findings, generates
+strategies, and runs the loop:
+
+```bash
+raze swarm benchmarks/offsec_dataset.json --top 6
+```
+
+The trajectory shows attention shifting: a class that lands raises the score of
+its siblings (signal), and a success's yields unlock dependent strategies (e.g.
+`unauth_service:access` → `service_access` → unlocks `unauth_service:rce`).
+
 ## Why Raze goes further than a plain path scorer (the Jev/Pentest-Swarm line)
 
 - **Same fast, typed pass** — deterministic, one pass, no LLM in the scoring loop.
