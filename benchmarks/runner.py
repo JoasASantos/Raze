@@ -75,6 +75,9 @@ def main(argv: list[str] | None = None) -> int:
           f"backend={report.metadata['backend']} runs={report.metadata['n_runs']} "
           f"cases={report.metadata['n_cases']}")
     print(f"ECE={report.ece:.4f} over n={report.n_predictions} predictions (aggregate only)")
+    if report.ece_test_raw is not None:
+        print(f"calibration (held-out test split): ECE_raw={report.ece_test_raw:.4f} "
+              f"ECE_calibrated={report.ece_test_calibrated:.4f} T={report.temperature:.3f}")
     print("disposition mean +/- stdev across runs:")
     for d in report.disposition_mean:
         print(f"  {d:9s} {report.disposition_mean[d]:.2f} +/- {report.disposition_stdev[d]:.2f}")

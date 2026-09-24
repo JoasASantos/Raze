@@ -49,3 +49,16 @@ def test_to_dict_serializable():
 
     report = run(_cases(), _factory, runs=2)
     json.dumps(report.to_dict())  # must not raise
+
+
+def test_calibration_fields_present_with_split():
+    report = run(_cases(), _factory, runs=4, calibrate=True)
+    assert report.ece_test_raw is not None
+    assert report.ece_test_calibrated is not None
+    assert report.temperature is not None
+
+
+def test_calibration_skipped_when_disabled():
+    report = run(_cases(), _factory, runs=2, calibrate=False)
+    assert report.ece_test_raw is None
+    assert report.temperature is None

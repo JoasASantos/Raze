@@ -24,6 +24,7 @@ from datetime import datetime, timezone
 from raze import __version__ as raze_version
 from raze.agent import Finding, RazeAgent
 from raze.calibration import expected_calibration_error
+from raze.calibrator import fit_temperature
 from raze.judgments import ExploitVerdict
 
 
@@ -61,9 +62,14 @@ class BenchReport:
     n_predictions: int
     disposition_mean: dict[str, float]
     disposition_stdev: dict[str, float]
+    # Calibration on a held-out split (None when there are too few cases to split).
+    ece_test_raw: float | None = None
+    ece_test_calibrated: float | None = None
+    temperature: float | None = None
     note: str = (
         "Exploratory. ECE is aggregate (not a per-finding band, not precision/recall). "
-        "Results are valid only for the code state in metadata."
+        "Calibration is fit on the train split and reported on the disjoint test "
+        "split. Results are valid only for the code state in metadata."
     )
 
     def to_dict(self) -> dict:
@@ -73,6 +79,9 @@ class BenchReport:
             "n_predictions": self.n_predictions,
             "disposition_mean": self.disposition_mean,
             "disposition_stdev": self.disposition_stdev,
+            "ece_test_raw": self.ece_test_raw,
+            "ece_test_calibrated": self.ece_test_calibrated,
+            "temperature": self.temperature,
             "note": self.note,
             "runs": [
                 {
@@ -108,14 +117,22 @@ def run(
     runs: int = 5,
     alternate: bool = True,
     backend_name: str = "echo",
+    calibrate: bool = True,
+    train_fraction: float = 0.5,
 ) -> BenchReport:
     if runs < 2:
         raise ValueError("A benchmark needs at least 2 runs (single runs are observations).")
     if not cases:
         raise ValueError("No cases to run.")
 
+    # Split cases (not runs) into disjoint train/test so calibration is honest.
+    n_train = int(len(cases) * train_fraction)
+    train_titles = {c.finding.title for c in cases[:n_train]}
+
     run_results: list[RunResult] = []
     pairs: list[tuple[float, bool]] = []
+    train_pairs: list[tuple[float, bool]] = []
+    test_pairs: list[tuple[float, bool]] = []
 
     for i in range(runs):
         agent = agent_factory()  # fresh agent per run
@@ -135,10 +152,21 @@ def run(
                     disposition=a.result.disposition,
                 )
             )
-            pairs.append((a.exploitability.probability, correct))
+            pair = (a.exploitability.probability, correct)
+            pairs.append(pair)
+            (train_pairs if case.finding.title in train_titles else test_pairs).append(pair)
         run_results.append(RunResult(index=i, order=[c.finding.title for c in ordered], predictions=preds))
 
     calibration = expected_calibration_error(pairs)
+
+    ece_test_raw = ece_test_calibrated = temperature = None
+    if calibrate and train_pairs and test_pairs:
+        ece_test_raw = expected_calibration_error(test_pairs).ece
+        scaler = fit_temperature(train_pairs)
+        temperature = scaler.temperature
+        ece_test_calibrated = expected_calibration_error(
+            [(scaler.apply(p), c) for p, c in test_pairs]
+        ).ece
 
     all_dispositions = {d for r in run_results for d in r.disposition_counts()}
     disposition_mean: dict[str, float] = {}
@@ -165,4 +193,7 @@ def run(
         n_predictions=calibration.n,
         disposition_mean=disposition_mean,
         disposition_stdev=disposition_stdev,
+        ece_test_raw=ece_test_raw,
+        ece_test_calibrated=ece_test_calibrated,
+        temperature=temperature,
     )
