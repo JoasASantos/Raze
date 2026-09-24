@@ -1,0 +1,19 @@
+# Topic Coverage
+
+Each topic is a module under `src/offsec_one/topics/` exposing tool interfaces and the Raze judgment schemas relevant to it. Interfaces are defined; concrete tool wiring is **proposed** (not yet implemented).
+
+| Topic | Key | Example judgments |
+|-------|-----|-------------------|
+| Reconnaissance | `recon` | asset relevance, attack-surface ranking |
+| Web application | `web` | XSS/SQLi/SSRF exploitability, auth-bypass reachability |
+| Network | `network` | service exposure, pivot value |
+| Active Directory | `ad` | privilege path value, misconfig impact |
+| Cloud | `cloud` | IAM misconfig impact, bucket exposure, metadata SSRF |
+| Mobile | `mobile` | insecure storage impact, IPC/exported-component reachability |
+| Wireless | `wireless` | rogue-AP feasibility, handshake capture value |
+| Exploit development | `exploitdev` | primitive reachability, mitigation-bypass feasibility |
+| Reverse engineering | `reversing` | function-of-interest ranking, vuln plausibility |
+| Social engineering | `social` | pretext plausibility (authorized assessments only) |
+| Cryptography | `crypto` | key/secret impact, weak-algorithm exploitability |
+
+Topic modules must call Raze only for **judgments**, and must route all state-changing actions through the harness authorization gate.
