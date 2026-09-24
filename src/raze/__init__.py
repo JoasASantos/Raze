@@ -7,6 +7,13 @@ deterministic analyzers, and validators behind an authorization boundary.
 
 __version__ = "0.0.1"
 
+from raze.adaptive import (
+    AdaptiveEngagement,
+    AdaptiveScorer,
+    LiveState,
+    ScoredStrategy,
+    Strategy,
+)
 from raze.agent import Assessment, Finding, RazeAgent
 from raze.authz import Scope, ScopeError
 from raze.backends import LLMBackend
@@ -41,9 +48,14 @@ from raze.validators import ValidationResult, validate_finding
 __all__ = [
     "ALL_TOPICS",
     "DECISION_REGISTRY",
+    "AdaptiveEngagement",
+    "AdaptiveScorer",
     "Assessment",
     "AssetPriority",
     "AttackChain",
+    "LiveState",
+    "ScoredStrategy",
+    "Strategy",
     "Backend",
     "CalibratedBackend",
     "CalibrationReport",
