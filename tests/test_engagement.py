@@ -50,7 +50,7 @@ def test_correlate_boosts_multiple_actionable_on_one_target():
     ]
     chains = _correlate(findings, decisions)
     assert len(chains) == 1
-    assert chains[0].target == "t.example.com"
+    assert chains[0].label == "t.example.com"
     # both actionable decisions on t.example.com got the compounding bonus
     assert decisions[0].priority == 65.0
     assert decisions[1].priority == 85.0

@@ -43,6 +43,8 @@ Orchestrates topic analyzers, calls the `Raze` model for decisions, runs validat
 - `agent.py` — orchestration: `assess()` (granular, per-judgment) and `decide()` (fast path: one combined model call).
 - `decide.py` — the decision engine: chained, short-circuiting, multi-factor priority scoring → one ranked `Decision`.
 - `engagement.py` — campaign-level: decide all findings, correlate attack chains, rank a plan with throughput.
+- `chaining.py` — rule-based multi-step attack paths across vuln classes (e.g. kerberoast → delegation → domain compromise), boosting chained findings.
+- `cvss.py` / `vulnclasses.py` / `classify.py` — CVSS v3.1 scoring, the vuln-class taxonomy (CWE + OWASP + typical vector), and signal→class inference that grounds/adapts each decision.
 - `killchain.py` — the full decision surface: every offsec decision kind, its phase, its judgment schema, and whether it is human-gated. See [DECISIONS.md](DECISIONS.md).
 - `validators.py` — deterministic checks that can downgrade or drop a finding.
 - `authz.py` — scope/authorization gate.

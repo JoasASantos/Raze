@@ -215,7 +215,7 @@ def _cmd_plan(args: argparse.Namespace) -> int:
     if report.chains:
         print("attack chains:")
         for c in report.chains:
-            print(f"  * {c.target} (prio {c.chain_priority:.0f}): {' -> '.join(c.steps)}")
+            print(f"  * [{c.kind}] {c.label} (prio {c.chain_priority:.0f}): {' -> '.join(c.steps)}")
     print(f"top {min(args.top, len(report.decisions))} by priority:")
     for d in report.top(args.top):
         print(f"  [{d.action:11s}] p={d.priority:5.1f}  {d.finding_title}")

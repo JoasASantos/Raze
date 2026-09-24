@@ -12,27 +12,12 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 
 from raze.agent import Finding, RazeAgent
+from raze.chaining import AttackChain, detect_class_chains
 from raze.decide import Decision
 
 _ACTIONABLE = ("exploit-now", "queue")
 _CHAIN_BONUS_PER_STEP = 5.0
 _CHAIN_BONUS_CAP = 20.0
-
-
-@dataclass
-class AttackChain:
-    target: str
-    steps: list[str]
-    chain_priority: float
-    why: str
-
-    def to_dict(self) -> dict:
-        return {
-            "target": self.target,
-            "steps": self.steps,
-            "chain_priority": round(self.chain_priority, 2),
-            "why": self.why,
-        }
 
 
 @dataclass
@@ -74,10 +59,11 @@ def _correlate(findings: list[Finding], decisions: list[Decision]) -> list[Attac
             ordered = sorted(actionable, key=lambda d: d.priority, reverse=True)
             chains.append(
                 AttackChain(
-                    target=target,
+                    label=target,
                     steps=[d.finding_title for d in ordered],
                     chain_priority=ordered[0].priority,
                     why="multiple actionable findings on one target compound the attack path",
+                    kind="target",
                 )
             )
     return sorted(chains, key=lambda c: c.chain_priority, reverse=True)
@@ -91,7 +77,10 @@ def run_engagement(findings: list[Finding], agent: RazeAgent) -> EngagementRepor
     decisions = [agent.decide(f) for f in findings]
     elapsed = time.perf_counter() - started
 
-    chains = _correlate(findings, decisions)  # may boost priorities
+    # Target-compounding chains, then rule-based cross-class attack paths.
+    chains = _correlate(findings, decisions)
+    chains = chains + detect_class_chains(decisions)  # both may boost priorities
+    chains = sorted(chains, key=lambda c: c.chain_priority, reverse=True)
     ranked = sorted(decisions, key=lambda d: d.priority, reverse=True)
 
     action_counts: dict[str, int] = defaultdict(int)
