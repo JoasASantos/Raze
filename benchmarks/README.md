@@ -46,7 +46,18 @@ benchmarks/
   protocol.md        <- (proposed) the exact paired protocol for any comparison
 ```
 
+## Datasets
+
+- `sample_dataset.json` — 4 cases, smoke test.
+- `offsec_dataset.json` — 23 labeled cases across web/network/crypto/ad/cloud/
+  mobile/wireless/exploitdev/reversing/social. Labels are **nuanced**: several
+  cases carry a real analyzer signal but are labeled `exploitable_truth: false`
+  (a weak hash, missing headers alone, missing mitigations with no proven vuln, a
+  dangerous import with no proven overflow). A model that fires on any signal
+  will be wrong on those — that is the point.
+
 ## Status
 
-No measured runs are committed. The ECE tooling and paired protocol are
-**proposed**. Do not cite results that do not exist here.
+No measured runs are committed. The ECE tooling and paired protocol are ready,
+but a *result* requires running the protocol above with a real backend under a
+frozen code state. Do not cite results that do not exist here.
