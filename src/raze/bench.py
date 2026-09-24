@@ -18,7 +18,7 @@ import statistics
 import subprocess
 from collections import Counter
 from collections.abc import Callable
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 
 from raze import __version__ as raze_version
@@ -32,6 +32,7 @@ from raze.judgments import ExploitVerdict
 class BenchCase:
     finding: Finding
     exploitable_truth: bool  # ground-truth label for this finding
+    meta: dict = field(default_factory=dict)  # cwe, difficulty, label_rationale, ...
 
 
 @dataclass
@@ -40,8 +41,10 @@ class Prediction:
     verdict: str
     probability: float
     predicted_positive: bool
+    truth: bool
     correct: bool
     disposition: str
+    difficulty: str | None = None
 
 
 @dataclass
@@ -66,6 +69,9 @@ class BenchReport:
     ece_test_raw: float | None = None
     ece_test_calibrated: float | None = None
     temperature: float | None = None
+    # Measured classification metrics (from predicted_positive vs. ground truth).
+    metrics: dict = field(default_factory=dict)
+    per_difficulty_accuracy: dict = field(default_factory=dict)
     note: str = (
         "Exploratory. ECE is aggregate (not a per-finding band, not precision/recall). "
         "Calibration is fit on the train split and reported on the disjoint test "
@@ -82,6 +88,8 @@ class BenchReport:
             "ece_test_raw": self.ece_test_raw,
             "ece_test_calibrated": self.ece_test_calibrated,
             "temperature": self.temperature,
+            "metrics": self.metrics,
+            "per_difficulty_accuracy": self.per_difficulty_accuracy,
             "note": self.note,
             "runs": [
                 {
@@ -108,6 +116,35 @@ def _ordered(cases: list[BenchCase], run_index: int, alternate: bool) -> list[Be
     if alternate and run_index % 2 == 1:
         return list(reversed(cases))
     return list(cases)
+
+
+def _classification_metrics(preds: list[Prediction]) -> dict:
+    """Measured accuracy/precision/recall/F1 from predicted_positive vs. truth.
+
+    These are measured on the labeled set (allowed), and are NOT derived from ECE.
+    """
+    tp = sum(1 for p in preds if p.predicted_positive and p.truth)
+    fp = sum(1 for p in preds if p.predicted_positive and not p.truth)
+    fn = sum(1 for p in preds if not p.predicted_positive and p.truth)
+    tn = sum(1 for p in preds if not p.predicted_positive and not p.truth)
+    total = tp + fp + fn + tn
+    precision = tp / (tp + fp) if (tp + fp) else 0.0
+    recall = tp / (tp + fn) if (tp + fn) else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
+    accuracy = (tp + tn) / total if total else 0.0
+    return {
+        "tp": tp, "fp": fp, "fn": fn, "tn": tn,
+        "accuracy": accuracy, "precision": precision, "recall": recall, "f1": f1,
+    }
+
+
+def _per_difficulty_accuracy(preds: list[Prediction]) -> dict:
+    out: dict[str, float] = {}
+    seen = {p.difficulty for p in preds if p.difficulty}
+    for d in sorted(seen):
+        group = [p for p in preds if p.difficulty == d]
+        out[d] = sum(1 for p in group if p.correct) / len(group)
+    return out
 
 
 def run(
@@ -148,8 +185,10 @@ def run(
                     verdict=a.exploitability.verdict.value,
                     probability=a.exploitability.probability,
                     predicted_positive=positive,
+                    truth=case.exploitable_truth,
                     correct=correct,
                     disposition=a.result.disposition,
+                    difficulty=case.meta.get("difficulty"),
                 )
             )
             pair = (a.exploitability.probability, correct)
@@ -158,6 +197,9 @@ def run(
         run_results.append(RunResult(index=i, order=[c.finding.title for c in ordered], predictions=preds))
 
     calibration = expected_calibration_error(pairs)
+    all_preds = [p for r in run_results for p in r.predictions]
+    metrics = _classification_metrics(all_preds)
+    per_difficulty_accuracy = _per_difficulty_accuracy(all_preds)
 
     ece_test_raw = ece_test_calibrated = temperature = None
     if calibrate and train_pairs and test_pairs:
@@ -196,4 +238,6 @@ def run(
         ece_test_raw=ece_test_raw,
         ece_test_calibrated=ece_test_calibrated,
         temperature=temperature,
+        metrics=metrics,
+        per_difficulty_accuracy=per_difficulty_accuracy,
     )

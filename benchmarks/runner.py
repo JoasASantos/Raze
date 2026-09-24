@@ -30,10 +30,12 @@ def _load_cases(path: str) -> list[BenchCase]:
         raw = json.load(f)
     cases = []
     for entry in raw:
+        meta = {k: v for k, v in entry.items() if k not in ("finding", "exploitable_truth")}
         cases.append(
             BenchCase(
                 finding=Finding(**entry["finding"]),
                 exploitable_truth=bool(entry["exploitable_truth"]),
+                meta=meta,
             )
         )
     return cases
@@ -74,6 +76,13 @@ def main(argv: list[str] | None = None) -> int:
     print(f"raze={report.metadata['raze_version']} rev={report.metadata['git_revision']} "
           f"backend={report.metadata['backend']} runs={report.metadata['n_runs']} "
           f"cases={report.metadata['n_cases']}")
+    m = report.metrics
+    print(f"measured: acc={m['accuracy']:.3f} precision={m['precision']:.3f} "
+          f"recall={m['recall']:.3f} f1={m['f1']:.3f} "
+          f"(tp={m['tp']} fp={m['fp']} fn={m['fn']} tn={m['tn']})")
+    if report.per_difficulty_accuracy:
+        by = " ".join(f"{k}={v:.3f}" for k, v in report.per_difficulty_accuracy.items())
+        print(f"accuracy by difficulty: {by}")
     print(f"ECE={report.ece:.4f} over n={report.n_predictions} predictions (aggregate only)")
     if report.ece_test_raw is not None:
         print(f"calibration (held-out test split): ECE_raw={report.ece_test_raw:.4f} "

@@ -28,6 +28,7 @@ def _load_cases(path: str) -> list[BenchCase]:
         BenchCase(
             finding=Finding(**entry["finding"]),
             exploitable_truth=bool(entry["exploitable_truth"]),
+            meta={k: v for k, v in entry.items() if k not in ("finding", "exploitable_truth")},
         )
         for entry in raw
     ]

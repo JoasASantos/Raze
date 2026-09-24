@@ -46,6 +46,15 @@ benchmarks/
   protocol.md        <- (proposed) the exact paired protocol for any comparison
 ```
 
+## Measured metrics (distinct from ECE)
+
+The harness reports **measured** classification metrics from `predicted_positive`
+vs. ground truth — accuracy, precision, recall, F1, and the confusion counts —
+plus **accuracy by difficulty**. These are measured on the labeled set (allowed)
+and are **not** derived from ECE. ECE stays a separate, aggregate calibration
+statistic. Report both; never substitute one for the other, and never turn ECE
+into precision/recall.
+
 ## Datasets
 
 - `sample_dataset.json` — 4 cases, smoke test.
