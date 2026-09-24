@@ -73,6 +73,22 @@ print(j.verdict, j.probability, j.rationale)
 Any other provider (a TypeSafe System One SDK call, a local model) plugs in via
 `LLMBackend(complete_fn)`. See [`docs/RAZE_MODEL_SPEC.md`](docs/RAZE_MODEL_SPEC.md).
 
+### CLI
+
+```bash
+# Assess a finding, enforcing an authorization scope (offline echo backend):
+offsec-one assess examples/finding.json --scope examples/scope.json --json
+
+# Use the Claude backend:
+offsec-one assess examples/finding.json --backend anthropic --model claude-opus-5
+
+# List implemented vs proposed topics:
+offsec-one topics
+```
+
+Reads a finding JSON (or `-` for stdin). Exit codes: `0` ok, `1` usage, `2` scope
+refused, `3` assessment failed.
+
 ## License
 
 TBD (add before public release).

@@ -1,0 +1,12 @@
+{
+  "target": "app.example.com",
+  "topic": "web",
+  "title": "Reflected parameter in search endpoint",
+  "has_reproduction": false,
+  "evidence": ["GET /search?q=<svg onload=1> reflected in response"],
+  "state": {
+    "param_value": "<svg onload=1>",
+    "response_body": "<html>results for <svg onload=1> ...</html>",
+    "response_headers": {"Server": "nginx"}
+  }
+}
