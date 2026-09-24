@@ -13,6 +13,7 @@ from raze.backends import LLMBackend
 from raze.calibration import CalibrationReport, expected_calibration_error
 from raze.calibrator import CalibratedBackend, TemperatureScaler, fit_temperature
 from raze.decide import Decision, build_decision
+from raze.engagement import AttackChain, EngagementReport, run_engagement
 from raze.judgments import (
     CombinedJudgment,
     Exploitability,
@@ -30,12 +31,14 @@ from raze.validators import ValidationResult, validate_finding
 __all__ = [
     "ALL_TOPICS",
     "Assessment",
+    "AttackChain",
     "Backend",
     "CalibratedBackend",
     "CalibrationReport",
     "CombinedJudgment",
     "Decision",
     "EchoBackend",
+    "EngagementReport",
     "Exploitability",
     "Finding",
     "Impact",
@@ -57,5 +60,6 @@ __all__ = [
     "build_decision",
     "expected_calibration_error",
     "fit_temperature",
+    "run_engagement",
     "validate_finding",
 ]

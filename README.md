@@ -78,6 +78,9 @@ Any other provider (a TypeSafe System One SDK call, a local model) plugs in via
 ### CLI
 
 ```bash
+# Campaign-level: decide a whole engagement, correlate attack chains, rank a plan:
+raze plan benchmarks/offsec_dataset.json --top 10
+
 # Fast decision: one combined model call, chained multi-factor verdict + priority:
 raze decide examples/finding.json --scope examples/scope.json
 

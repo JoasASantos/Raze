@@ -22,6 +22,7 @@ import sys
 from raze import Raze, __version__
 from raze.agent import Assessment, Finding, RazeAgent
 from raze.authz import Scope, ScopeError
+from raze.engagement import run_engagement
 from raze.topics import ANALYZERS, PROPOSED_TOPICS
 
 EXIT_OK = 0
@@ -168,6 +169,59 @@ def _cmd_decide(args: argparse.Namespace) -> int:
     return EXIT_OK
 
 
+def _cmd_plan(args: argparse.Namespace) -> int:
+    """Campaign-level: decide a whole set of findings and rank a global plan."""
+    try:
+        raw = _load_json(args.findings)
+    except (OSError, json.JSONDecodeError) as e:
+        print(f"error: cannot read findings: {e}", file=sys.stderr)
+        return EXIT_USAGE
+    if not isinstance(raw, list):
+        print("error: findings file must be a JSON array", file=sys.stderr)
+        return EXIT_USAGE
+
+    scope = None
+    if args.scope:
+        try:
+            scope = Scope(**_load_json(args.scope))
+        except (OSError, json.JSONDecodeError, TypeError) as e:
+            print(f"error: cannot read scope: {e}", file=sys.stderr)
+            return EXIT_USAGE
+
+    try:
+        # Accept either bare finding objects or dataset rows ({"finding": {...}}).
+        findings = [Finding(**(entry.get("finding", entry))) for entry in raw]
+        backend = _build_backend(args.backend, args.model)
+    except Exception as e:  # noqa: BLE001
+        print(f"error: {e}", file=sys.stderr)
+        return EXIT_USAGE
+
+    agent = RazeAgent(raze=Raze(backend=backend), scope=scope, run_analyzers=not args.no_analyzers)
+    try:
+        report = run_engagement(findings, agent)
+    except ScopeError as e:
+        print(f"scope refused: {e}", file=sys.stderr)
+        return EXIT_SCOPE
+    except Exception as e:  # noqa: BLE001
+        print(f"planning failed: {e}", file=sys.stderr)
+        return EXIT_JUDGMENT
+
+    if args.json:
+        print(json.dumps(report.to_dict(), indent=2))
+        return EXIT_OK
+
+    print(f"engagement: {report.n_findings} findings in {report.total_ms:.1f}ms "
+          f"({report.throughput:.0f}/s)  actions={report.action_counts}")
+    if report.chains:
+        print("attack chains:")
+        for c in report.chains:
+            print(f"  * {c.target} (prio {c.chain_priority:.0f}): {' -> '.join(c.steps)}")
+    print(f"top {min(args.top, len(report.decisions))} by priority:")
+    for d in report.top(args.top):
+        print(f"  [{d.action:11s}] p={d.priority:5.1f}  {d.finding_title}")
+    return EXIT_OK
+
+
 def _cmd_topics(_args: argparse.Namespace) -> int:
     print("Implemented topics:")
     for topic, analyzers in ANALYZERS.items():
@@ -204,6 +258,16 @@ def main(argv: list[str] | None = None) -> int:
     d.add_argument("--no-analyzers", action="store_true", help="Skip deterministic analyzers.")
     d.add_argument("--json", action="store_true", help="Emit JSON instead of human-readable text.")
     d.set_defaults(func=_cmd_decide)
+
+    p = sub.add_parser("plan", help="Decide a whole engagement (JSON array) and rank a plan.")
+    p.add_argument("findings", help="Path to a JSON array of findings (or dataset rows), '-' stdin.")
+    p.add_argument("--scope", help="Path to scope JSON (enforces authorization boundary).")
+    p.add_argument("--backend", choices=["echo", "anthropic"], default="echo")
+    p.add_argument("--model", help="Model id for the anthropic backend (default claude-opus-5).")
+    p.add_argument("--no-analyzers", action="store_true", help="Skip deterministic analyzers.")
+    p.add_argument("--top", type=int, default=10, help="How many ranked decisions to print.")
+    p.add_argument("--json", action="store_true", help="Emit JSON instead of human-readable text.")
+    p.set_defaults(func=_cmd_plan)
 
     t = sub.add_parser("topics", help="List implemented and proposed topics.")
     t.set_defaults(func=_cmd_topics)
