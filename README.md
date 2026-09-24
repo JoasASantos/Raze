@@ -91,4 +91,6 @@ refused, `3` assessment failed.
 
 ## License
 
-TBD (add before public release).
+[Apache-2.0](LICENSE). Copyright 2026 Joás Santos and contributors. See [NOTICE](NOTICE).
+
+Authorized offensive-security use only — test only what you own or are explicitly authorized in writing to test.

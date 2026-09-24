@@ -4,8 +4,9 @@ version = "0.0.1"
 description = "Offensive-security agent built on Raze, a System One model in the Jev family."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "TBD" }
-authors = [{ name = "OffSec One contributors" }]
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{ name = "Joás Santos" }, { name = "OffSec One contributors" }]
 dependencies = [
     "pydantic>=2.6",
 ]
