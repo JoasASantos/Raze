@@ -14,6 +14,7 @@ from raze.backends.llm import JudgmentParseError, LLMBackend, build_system_promp
 
 __all__ = [
     "PROVIDERS",
+    "HeuristicBackend",
     "JudgmentParseError",
     "LLMBackend",
     "build_system_prompt",
@@ -21,7 +22,7 @@ __all__ = [
     "make_backend",
 ]
 
-PROVIDERS = ("echo", "anthropic", "openai", "gemini")
+PROVIDERS = ("echo", "heuristic", "anthropic", "openai", "gemini")
 
 
 def make_backend(provider: str, **kwargs):
@@ -31,6 +32,10 @@ def make_backend(provider: str, **kwargs):
     provider = provider.lower()
     if provider == "echo":
         return None
+    if provider == "heuristic":
+        from raze.backends.heuristic import HeuristicBackend
+
+        return HeuristicBackend()
     if provider == "anthropic":
         from raze.backends.anthropic_backend import AnthropicBackend
 
@@ -48,6 +53,10 @@ def make_backend(provider: str, **kwargs):
 
 def __getattr__(name: str):
     # Lazy import so importing the package never requires any provider SDK.
+    if name == "HeuristicBackend":
+        from raze.backends.heuristic import HeuristicBackend
+
+        return HeuristicBackend
     if name == "AnthropicBackend":
         from raze.backends.anthropic_backend import AnthropicBackend
 

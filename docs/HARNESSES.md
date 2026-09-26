@@ -10,7 +10,8 @@ harness or LLM provider. The universal insertion point is `LLMBackend`.
 | Claude | `AnthropicBackend` | `pip install "raze[anthropic]"` | Anthropic API |
 | OpenAI / Codex | `OpenAIBackend` | `pip install "raze[openai]"` | OpenAI, Codex models, Azure OpenAI, OpenRouter, local (Ollama/vLLM) via `base_url` |
 | Gemini | `GeminiBackend` | `pip install "raze[gemini]"` | Google Gemini |
-| offline | `EchoBackend` | (built in) | tests / wiring |
+| **no model** | `HeuristicBackend` | (built in) | deterministic verdicts from signals + class + CVSS — decides well with no LLM, no fine-tune |
+| offline stub | `EchoBackend` | (built in) | tests / wiring (conservative) |
 
 ```python
 from raze import Raze

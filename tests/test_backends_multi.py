@@ -22,7 +22,7 @@ def test_make_backend_echo_is_none_and_unknown_raises():
     assert make_backend("echo") is None
     with pytest.raises(ValueError):
         make_backend("nope")
-    assert set(PROVIDERS) == {"echo", "anthropic", "openai", "gemini"}
+    assert set(PROVIDERS) == {"echo", "heuristic", "anthropic", "openai", "gemini"}
 
 
 def _fake_openai_client(content):

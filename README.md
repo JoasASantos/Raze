@@ -45,11 +45,15 @@ Early scaffold. Contributions marked honestly as **implemented / measured / prop
 
 ## Quickstart
 
-Offline (deterministic stub backend, no credentials):
+No model at all — deterministic decisions from signals + class + CVSS
+(`HeuristicBackend`). On the bundled 55-case dataset it scores accuracy 0.82 /
+precision 1.00 / recall 0.67 with no LLM and no fine-tune; a model backend is an
+optional upgrade for the semantic verdict (higher recall):
 
 ```bash
 pip install -e .
-python examples/triage_finding.py
+raze plan benchmarks/offsec_dataset.json --backend heuristic --top 10
+python examples/triage_finding.py            # EchoBackend stub (conservative)
 ```
 
 With a real model backend (Claude):
