@@ -33,13 +33,24 @@ class BinaryTriageAnalyzer:
 
     def analyze(self, state: dict) -> list[Signal]:
         out: list[Signal] = []
-        for imp in state.get("imports", []) or []:
-            key = str(imp).lower().lstrip("_")
+        imports = [str(i).lower().lstrip("_") for i in state.get("imports", []) or []]
+        strings = [str(s) for s in state.get("strings", []) or []]
+        command_sinks = {"system", "exec", "popen"}
+
+        for key in imports:
             if key in DANGEROUS_IMPORTS:
                 sev, why = DANGEROUS_IMPORTS[key]
                 out.append(Signal("dangerous-import", why, severity=sev))
-        for s in state.get("strings", []) or []:
-            if _INTERESTING_STRING.search(str(s)):
-                snippet = str(s)[:60]
-                out.append(Signal("interesting-string", f"{snippet!r}", severity="low"))
+        for s in strings:
+            if "PRIVATE KEY" in s.upper():
+                out.append(Signal("embedded-secret", "embedded private key in binary", "high"))
+            elif _INTERESTING_STRING.search(s):
+                out.append(Signal("interesting-string", f"{s[:60]!r}", severity="low"))
+
+        # A command-exec sink plus a format/argument string is injection evidence.
+        if any(k in command_sinks for k in imports) and any("%s" in s or "-c" in s for s in strings):
+            out.append(
+                Signal("command-injection-evidence",
+                       "command-exec sink fed a tainted/format string", severity="high")
+            )
         return out

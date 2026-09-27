@@ -19,6 +19,7 @@ SIGNAL_CLASS: dict[str, str] = {
     "unescaped-reflection": "xss_reflected",
     "reflection": "xss_reflected",
     "open-redirect": "open_redirect",
+    "ssrf": "ssrf",
     "cors-misconfig": "cors_misconfig",
     "clickjacking": "clickjacking",
     "insecure-cookie": "weak_session",
@@ -32,6 +33,7 @@ SIGNAL_CLASS: dict[str, str] = {
     "jwt-alg-none": "jwt_flaw",
     "weak-algorithm": "weak_crypto",
     "low-entropy-secret": "hardcoded_secret",
+    "weak-password-hash": "weak_crypto",
     # ad
     "kerberoastable": "kerberoasting",
     "asrep-roastable": "asrep_roasting",
@@ -53,7 +55,11 @@ SIGNAL_CLASS: dict[str, str] = {
     "weak-relro": "missing_mitigations",
     # reversing
     "dangerous-import": "memory_corruption",
+    "command-injection-evidence": "command_injection",
+    "embedded-secret": "embedded_secret",
     "interesting-string": "embedded_secret",
+    # exploitdev
+    "exploitable-primitive": "memory_corruption",
     # social
     "no-spf": "email_spoofable",
     "no-dkim": "email_spoofable",

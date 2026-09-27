@@ -25,6 +25,7 @@ from raze.topics.web import (
     ReflectionAnalyzer,
     SecurityHeaderAnalyzer,
     SQLiErrorAnalyzer,
+    SSRFAnalyzer,
 )
 from raze.topics.wireless import WifiSecurityAnalyzer
 
@@ -32,6 +33,7 @@ ANALYZERS: dict[str, list[Analyzer]] = {
     "web": [
         ReflectionAnalyzer(),
         SQLiErrorAnalyzer(),
+        SSRFAnalyzer(),
         OpenRedirectAnalyzer(),
         CorsMisconfigAnalyzer(),
         ClickjackingAnalyzer(),

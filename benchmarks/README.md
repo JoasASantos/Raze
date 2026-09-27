@@ -55,6 +55,15 @@ and are **not** derived from ECE. ECE stays a separate, aggregate calibration
 statistic. Report both; never substitute one for the other, and never turn ECE
 into precision/recall.
 
+## Honesty note on the heuristic backend
+
+`HeuristicBackend` scores near-perfectly on `offsec_dataset.json` because the
+detectors and this dataset were authored together — the score here **validates the
+wiring/mechanism, not generalization**. Real recall on unseen findings will be
+lower; that gap is what a reused LLM (and later a fine-tuned model) closes. Treat
+the heuristic's dataset score as a smoke test, and report generalization only on a
+held-out set the detectors were not tuned against.
+
 ## Datasets
 
 - `sample_dataset.json` — 4 cases, smoke test.

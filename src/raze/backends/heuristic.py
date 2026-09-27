@@ -29,14 +29,22 @@ _PROB = {
     Severity.critical: 0.9,
 }
 
-# Signals that, at high/critical severity, confirm a concrete exploitable path
-# (as opposed to hardening/weak-only signals like missing-header or no-nx).
-EXPLOIT_CONFIRMING = {
-    "sql-error", "unescaped-reflection", "open-redirect", "cors-misconfig",
-    "jwt-alg-none", "low-entropy-secret", "metadata-endpoint", "public-bucket",
-    "risky-port", "kerberoastable", "asrep-roastable", "unconstrained-delegation",
-    "wifi-encryption", "wps-enabled", "cleartext-traffic", "debuggable",
-    "exported-component", "no-spf", "no-dmarc",
+# Signals that confirm a concrete exploitable path (vs hardening/weak-only signals
+# like missing-header or no-nx). CONFIRM_ANY confirms at any non-info severity;
+# CONFIRM_HIGH only at high/critical (severity carries the meaning, e.g. ports).
+CONFIRM_ANY = {
+    "sql-error", "unescaped-reflection", "open-redirect", "ssrf", "cors-misconfig",
+    "jwt-alg-none", "low-entropy-secret", "weak-password-hash", "metadata-endpoint",
+    "public-bucket", "unconstrained-delegation",
+    "cleartext-traffic", "exported-component", "embedded-secret",
+    "command-injection-evidence", "exploitable-primitive",
+    "no-spf", "no-dmarc", "dmarc-monitor-only", "lookalike-domain",
+}
+# Severity-gated: only confirm at high/critical (the severity carries the meaning —
+# e.g. an admin-owned roastable account is high, a low-priv one is medium).
+CONFIRM_HIGH = {
+    "risky-port", "wifi-encryption", "wps-enabled", "debuggable",
+    "kerberoastable", "asrep-roastable",
 }
 
 
@@ -49,7 +57,9 @@ class HeuristicBackend:
 
         reachable = bool(signals) or bool(context.evidence)
         confirming = any(
-            s.severity in ("high", "critical") and s.name in EXPLOIT_CONFIRMING for s in signals
+            (s.name in CONFIRM_ANY and s.severity != "info")
+            or (s.name in CONFIRM_HIGH and s.severity in ("high", "critical"))
+            for s in signals
         )
         any_medium_plus = any(_ORD.get(s.severity, 0) >= 2 for s in signals)
 

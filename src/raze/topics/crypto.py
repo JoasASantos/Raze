@@ -36,11 +36,19 @@ class WeakAlgorithmAnalyzer:
 
     def analyze(self, state: dict) -> list[Signal]:
         out: list[Signal] = []
+        password_ctx = str(state.get("context", "")).lower() == "password-storage"
         for algo in state.get("algorithms", []) or []:
             key = str(algo).lower().replace("-", "").replace("_", "")
             for weak, (sev, why) in WEAK_ALGORITHMS.items():
                 if weak in key:
-                    out.append(Signal("weak-algorithm", f"{algo}: {why}", severity=sev))
+                    if password_ctx and weak in ("md5", "md4", "sha1", "des"):
+                        out.append(
+                            Signal("weak-password-hash",
+                                   f"{algo} for password storage — crackable at scale",
+                                   severity="high")
+                        )
+                    else:
+                        out.append(Signal("weak-algorithm", f"{algo}: {why}", severity=sev))
                     break
         jwt_alg = state.get("jwt_alg")
         if jwt_alg and str(jwt_alg).lower() == "none":

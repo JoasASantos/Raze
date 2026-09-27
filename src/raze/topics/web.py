@@ -7,9 +7,23 @@ requests — the harness collects responses under scope and passes them here.
 from __future__ import annotations
 
 import html
+import ipaddress
 import re
+from urllib.parse import urlparse
 
 from raze.topics.base import Signal
+
+
+def _is_internal_host(host: str) -> bool:
+    if host in ("localhost",) or host.endswith(".internal"):
+        return True
+    if host in ("169.254.169.254", "metadata.google.internal"):
+        return True
+    try:
+        ip = ipaddress.ip_address(host)
+        return ip.is_private or ip.is_loopback or ip.is_link_local
+    except ValueError:
+        return False
 
 DANGEROUS_CHARS = ("<", ">", '"', "'", "(", ")")
 
@@ -112,6 +126,24 @@ class SecurityHeaderAnalyzer:
             if header not in present:
                 out.append(Signal("missing-header", detail, severity=severity))
         return out
+
+
+class SSRFAnalyzer:
+    """Detect a request parameter pointing at an internal/loopback/metadata host.
+
+    state: {"param_value": "http://127.0.0.1:8080/admin"}
+    """
+
+    topic = "web"
+
+    def analyze(self, state: dict) -> list[Signal]:
+        pv = state.get("param_value")
+        if not pv or "://" not in str(pv):
+            return []
+        host = (urlparse(str(pv)).hostname or "").lower()
+        if host and _is_internal_host(host):
+            return [Signal("ssrf", f"parameter targets internal host {host}", severity="high")]
+        return []
 
 
 class CorsMisconfigAnalyzer:
